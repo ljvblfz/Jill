@@ -28,7 +28,7 @@ LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/tree%,,$(LOCAL_SRC_FILES))
 LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/util%,,$(LOCAL_SRC_FILES))
 LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/xml%,,$(LOCAL_SRC_FILES))
 
-LOCAL_MODULE := asm-4.1-jill
+LOCAL_MODULE := asm-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
@@ -41,11 +41,11 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src/org/objectweb/asm/tree/analysis)
 
-LOCAL_MODULE := asm-analysis-4.1-jill
+LOCAL_MODULE := asm-analysis-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_JAVA_LIBRARIES := asm-4.1-jill asm-tree-4.1-jill
+LOCAL_JAVA_LIBRARIES := asm-4.1-jack asm-tree-4.1-jack
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
@@ -56,11 +56,11 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src/org/objectweb/asm/commons)
 
-LOCAL_MODULE := asm-commons-4.1-jill
+LOCAL_MODULE := asm-commons-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_JAVA_LIBRARIES := asm-4.1-jill asm-tree-4.1-jill
+LOCAL_JAVA_LIBRARIES := asm-4.1-jack asm-tree-4.1-jack
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
@@ -73,11 +73,11 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src/org/objectweb/asm/tree)
 # Excludes
 LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/tree/analysis%,, $(LOCAL_SRC_FILES))
 
-LOCAL_MODULE := asm-tree-4.1-jill
+LOCAL_MODULE := asm-tree-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_JAVA_LIBRARIES := asm-4.1-jill
+LOCAL_JAVA_LIBRARIES := asm-4.1-jack
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
@@ -88,11 +88,11 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src/org/objectweb/asm/util)
 
-LOCAL_MODULE := asm-util-4.1-jill
+LOCAL_MODULE := asm-util-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_JAVA_LIBRARIES := asm-4.1-jill asm-analysis-4.1-jill asm-tree-4.1-jill
+LOCAL_JAVA_LIBRARIES := asm-4.1-jack asm-analysis-4.1-jack asm-tree-4.1-jack
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
@@ -103,11 +103,11 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src/org/objectweb/asm/xml)
 
-LOCAL_MODULE := asm-xml-4.1-jill
+LOCAL_MODULE := asm-xml-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_JAVA_LIBRARIES := asm-4.1-jill asm-util-4.1-jill
+LOCAL_JAVA_LIBRARIES := asm-4.1-jack asm-util-4.1-jack
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
@@ -121,7 +121,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/attrs%,, $(LOCAL_SRC_FILES))
 LOCAL_SRC_FILES := $(patsubst src/org/objectweb/asm/optimizer%,, $(LOCAL_SRC_FILES))
 
-LOCAL_MODULE := asm-all-4.1-jill
+LOCAL_MODULE := asm-all-4.1-jack
 
 LOCAL_MODULE_TAGS := optional
 

@@ -32,22 +32,22 @@ public class Core {
   @Test
   public void coreToJayceFromJar() throws Exception {
     Options options = new Options();
-    options.setBinaryFile(new File(TestTools.getAndroidTop()
+    options.setBinaryFile(new File(JillTestTools.getAndroidTop()
         + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;
-    options.outputDirOrZip = TestTools.createTempDir("core_", "_dir");
+    options.outputDirOrZip = JillTestTools.createTempDir("core_", "_dir");
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 
   @Test
   public void coreToJayceFromFolder() throws Exception {
     Options options = new Options();
-    options.setBinaryFile(new File(TestTools.getAndroidTop()
+    options.setBinaryFile(new File(JillTestTools.getAndroidTop()
         + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes/"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;
-    options.outputDirOrZip = TestTools.createTempDir("core_", "_dir");
+    options.outputDirOrZip = JillTestTools.createTempDir("core_", "_dir");
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 }

@@ -42,10 +42,6 @@ public class SourceInfoWriter {
   @Nonnegative
   private static final int NO_END_LINE = 0;
 
-  private static final int NO_START_COLUMN = -1;
-
-  private static final int NO_END_COLUMN = -1;
-
   private static final String NO_FILENAME = null;
 
   @CheckForNull
@@ -80,7 +76,7 @@ public class SourceInfoWriter {
     writeDebugBeginInternal(NO_FILENAME, NO_START_LINE);
   }
 
-  private void writeDebugBeginInternal(@Nonnull String sourceFile, int startLine)
+  private void writeDebugBeginInternal(@CheckForNull String sourceFile, int startLine)
       throws IOException {
     writeFileNameIfDifferentFromCurrent(sourceFile);
     writeLineIfDifferentFromCurrent(startLine, true);

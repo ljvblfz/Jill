@@ -481,29 +481,14 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         writer.writeOpen();
         writer.writeId(getCatchId(tryCatchNode.handler));
 
-        writer.writeOpenNodeList();
-
-        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
-        writer.writeCatchBlockIds(currentCatchList);
-        writer.writeKeyword(Token.EXPRESSION_STATEMENT);
         writer.writeOpen();
-        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
-        writer.writeKeyword(Token.ASG_OPERATION);
-        writer.writeOpen();
-        writeLocalRef(declaringCatchVariable);
-
-        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
-        writer.writeKeyword(Token.EXCEPTION_RUNTIME_VALUE);
-        writer.writeOpen();
+        writer.writeInt(1);
         writer.writeId(declaringCatchVariable.getType().getDescriptor());
-        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
         writer.writeClose();
 
-        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
-        writer.writeClose();
+        writeLocal(declaringCatchVariable);
 
-        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
-        writer.writeClose();
+        writer.writeOpenNodeList();
 
         if (frames[labelIdx] != null) {
           sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
@@ -2144,7 +2129,6 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
       }
     }
 
-    locals.addAll(catchBlockToCatchedVariable.values());
     return locals;
   }
 

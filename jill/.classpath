@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="ANDROID_BUILD_TOP/out/host/common/obj/JAVA_LIBRARIES/asm-all-4.1-jack_intermediates/javalib.jar" sourcepath="/ANDROID_BUILD_TOP/toolchain/jack/asm4/src"/>
+	<classpathentry kind="var" path="ANDROID_BUILD_TOP/out/host/common/obj/JAVA_LIBRARIES/args4j-jack_intermediates/javalib.jar" sourcepath="/ANDROID_BUILD_TOP/toolchain/jack/args4j/args4j/src"/>
+	<classpathentry kind="var" path="ANDROID_BUILD_TOP/out/host/common/obj/JAVA_LIBRARIES/guava-jack_intermediates/javalib.jar" sourcepath="/ANDROID_BUILD_TOP/toolchain/jack/guava/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="ANDROID_BUILD_TOP/out/host/common/obj/JAVA_LIBRARIES/jsr305lib-jack_intermediates/javalib.jar" sourcepath="/ANDROID_BUILD_TOP/toolchain/jack/jsr305/ri/src/main/java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Jack"/>
+	<classpathentry kind="var" path="ANDROID_BUILD_TOP/out/host/common/obj/JAVA_LIBRARIES/dexcomparator_intermediates/javalib.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

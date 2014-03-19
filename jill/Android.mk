@@ -28,7 +28,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
-  asm-all-4.1-jill \
+  asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
   args4j-jack
@@ -66,7 +66,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
-  asm-all-4.1-jill \
+  asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
   args4j-jack
@@ -83,3 +83,64 @@ include $(BUILD_HOST_JAVA_LIBRARY)
 
 # Include this library in the build server's output directory
 $(call dist-for-goals, dist_files, $(LOCAL_BUILT_MODULE):jill-jarjar-asm.jar)
+
+
+#
+# Build Jill tests
+#
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(call all-java-files-under, tests)
+
+LOCAL_MODULE := libjillunittests
+
+LOCAL_MODULE_TAGS := optional
+LOCAL_JAVACFLAGS := -processor com.android.sched.build.SchedAnnotationProcessor
+
+LOCAL_STATIC_JAVA_LIBRARIES := jill
+
+LOCAL_JAVA_LIBRARIES := \
+  libjackunittests \
+  sched-build \
+  $(TEST_STATIC_JAVA_LIBRARIES)
+
+LOCAL_REQUIRED_MODULES:= \
+  core \
+  bouncycastle \
+  ext \
+  core-junit \
+  framework \
+  telephony-common \
+  android.policy
+
+include $(BUILD_HOST_JAVA_LIBRARY)
+
+#
+# Test targets
+#
+
+LIB_JILL_UNIT_TESTS := $(LOCAL_BUILT_MODULE)
+
+local_unit_libs := $(call java-lib-files,core-hostdex junit4-hostdex-jack,true)
+
+.PHONY: test-jill
+test-jill-unit: PRIVATE_RUN_TESTS := ./run-jill-unit-tests
+test-jill-unit: PRIVATE_PATH := $(LOCAL_PATH)
+test-jill-unit: $(LIB_JILL_UNIT_TESTS) $(LOCAL_PATH)/run-jill-unit-tests $(local_unit_libs) $(JACK_JAR) $(JILL_JAR)
+	$(hide) cd $(PRIVATE_PATH) && $(PRIVATE_RUN_TESTS) com.android.jill.PreSubmitTests
+
+local_long_libs := $(call java-lib-files,core bouncycastle core-junit ext framework guava services \
+  libarity google-play-services-first-party telephony-common,)
+.PHONY: test-jill-long
+test-jill-long: PRIVATE_RUN_TESTS := ./run-jill-unit-tests
+test-jill-long: PRIVATE_PATH := $(LOCAL_PATH)
+test-jill-long: $(LIB_JILL_UNIT_TESTS) $(LOCAL_PATH)/run-jill-unit-tests $(local_long_libs) $(JACK_JAR) $(JILL_JAR)
+	$(hide) cd $(PRIVATE_PATH) && $(PRIVATE_RUN_TESTS) com.android.jill.LongLastingTests
+
+.PHONY: test-jill-unit-all
+test-jill-unit-all: PRIVATE_RUN_TESTS := ./run-jill-unit-tests
+test-jill-unit-all: PRIVATE_PATH := $(LOCAL_PATH)
+test-jill-unit-all: $(LIB_JILL_UNIT_TESTS) $(LOCAL_PATH)/run-jill-unit-tests $(local_unit_libs) $(local_long_libs) $(JACK_JAR) $(JILL_JAR)
+	$(hide) cd $(PRIVATE_PATH) && $(PRIVATE_RUN_TESTS) com.android.jill.AllTests
+
