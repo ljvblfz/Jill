@@ -148,6 +148,7 @@ public enum Token {
   THIS_REF("this"),
   THIS_REF_TYPE_INFO("this-type-info"),
   THROW_STATEMENT("throw"),
+  THROWN_EXCEPTION("thrown-exception"),
   TRY_STATEMENT("try"),
   UNLOCK("unlock"),
   WHILE_STATEMENT("while")

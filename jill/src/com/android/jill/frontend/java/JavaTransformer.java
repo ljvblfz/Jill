@@ -280,7 +280,7 @@ public class JavaTransformer {
     JayceWriter writer = new JayceWriter(os);
 
       writer.writeHeader(
-          "jayce(2.09 \"" + Jill.FILE_ENCODING + "\" \"Jill version : " + version + "\")");
+          "jayce(2.10 \"" + Jill.FILE_ENCODING + "\" \"Jill version : " + version + "\")");
 
       return writer;
   }

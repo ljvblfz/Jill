@@ -215,12 +215,12 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeKeyword(Token.CONSTRUCTOR);
     writer.writeOpen();
     writeParameters();
-    writer.writeIds(AsmHelper.getDescriptorsFromInternalNames(currentMethod.exceptions));
     writer.writeInt(AsmHelper.getModifiers(currentMethod));
     annotWriter.writeAnnotations(currentMethod);
     writeMethodBody();
     writer.writeOpenNodeList(); // Markers
     writeOriginalTypeInfoMarker();
+    writeThrownExceptionMarker();
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(currentClass, endLine);
     writer.writeClose();
@@ -245,13 +245,13 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     }
     writer.writeMethodKindEnum(methodKind);
 
-    writer.writeIds(AsmHelper.getDescriptorsFromInternalNames(currentMethod.exceptions));
     writer.writeInt(AsmHelper.isStaticInit(currentMethod) ? AsmHelper.getModifiers(currentMethod)
         | CONSTRUCTOR : AsmHelper.getModifiers(currentMethod));
     annotWriter.writeAnnotations(currentMethod);
     writeMethodBody();
     writer.writeOpenNodeList(); // Markers
     writeOriginalTypeInfoMarker();
+    writeThrownExceptionMarker();
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(currentClass, endLine);
     writer.writeClose();
@@ -288,6 +288,15 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
       writer.writeClose();
     } else {
       writer.writeNull();
+    }
+  }
+
+  private void writeThrownExceptionMarker() throws IOException {
+    if (currentMethod.exceptions != null && !currentMethod.exceptions.isEmpty()) {
+      writer.writeKeyword(Token.THROWN_EXCEPTION);
+      writer.writeOpen();
+      writer.writeIds(AsmHelper.getDescriptorsFromInternalNames(currentMethod.exceptions));
+      writer.writeClose();
     }
   }
 
