@@ -168,7 +168,7 @@ public class ClassNodeWriter extends JillWriter {
     if (thisRefSignature != null) {
       writer.writeKeyword(Token.THIS_REF_TYPE_INFO);
       writer.writeOpen();
-      writeValue(thisRefSignature);
+      writer.writeString(thisRefSignature);
       writer.writeClose();
     }
   }
@@ -177,9 +177,9 @@ public class ClassNodeWriter extends JillWriter {
     writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
     writer.writeOpen();
     if (AsmHelper.isGenericSignature(cn)) {
-      writeValue(cn.signature);
+      writer.writeString(cn.signature);
     } else {
-      writer.writeNull();
+      writer.writeString(null);
     }
     writer.writeString(AsmHelper.getSourceName(cn));
     writer.writeClose();
@@ -189,8 +189,7 @@ public class ClassNodeWriter extends JillWriter {
     if (fn.signature != null) {
       writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
       writer.writeOpen();
-      writeValue(fn.signature);
-//      writer.writeNull(); // Source name not set
+      writer.writeString(fn.signature);
       writer.writeString(null);
       writer.writeClose();
     } else {

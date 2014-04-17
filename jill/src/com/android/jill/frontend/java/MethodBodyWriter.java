@@ -282,8 +282,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     if (currentMethod.signature != null) {
       writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
       writer.writeOpen();
-      writeValue(currentMethod.signature);
-      //writer.writeNull(); // Source name not set.
+      writer.writeString(currentMethod.signature);
       writer.writeString(null);
       writer.writeClose();
     } else {
@@ -1969,7 +1968,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     if (v.hasSignature()) {
       writer.writeKeyword(Token.ORIGINAL_TYPE_INFO); // Marker original type info
       writer.writeOpen();
-      writeValue(v.getSignature());
+      writer.writeString(v.getSignature());
       writer.writeString(AsmHelper.getSourceName(currentClass));
       writer.writeClose();
     }
@@ -2209,7 +2208,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     if (param.hasSignature()) {
       writer.writeKeyword(Token.ORIGINAL_TYPE_INFO); // Marker original type info
       writer.writeOpen();
-      writeValue(param.getSignature());
+      writer.writeString(param.getSignature());
       writer.writeString(AsmHelper.getSourceName(currentClass));
       writer.writeClose();
     }
