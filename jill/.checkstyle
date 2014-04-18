@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
-  <local-check-config name="Metro Checkstyle" location="/home/benoitlamarche/metrostyle.xml" type="external" description="">
-    <property name="com.puppycrawl.tools.checkstyle.checks.sizes.LineLength.max" value="100"/>
-    <property name="com.puppycrawl.tools.checkstyle.checks.sizes.LineLength.ignorePattern" value="^(package .*;\s*)|(import .*;\s*)|( *\* *https?://.*)|(\s*@[\w\.\$]+::\w+(?:\([^\(]*\)|\(\)\(\))?[,;]?)$"/>
+  <local-check-config name="Jill Checkstyle" location="jillstyle.xml" type="project" description="">
     <additional-data name="protect-config-file" value="true"/>
   </local-check-config>
-  <fileset name="Java Source Files" enabled="true" check-config-name="Metro Checkstyle" local="true">
+  <fileset name="Java Source Files" enabled="true" check-config-name="Jill Checkstyle" local="true">
     <file-match-pattern match-pattern="^src.*\.java$" include-pattern="true"/>
   </fileset>
 </fileset-config>
