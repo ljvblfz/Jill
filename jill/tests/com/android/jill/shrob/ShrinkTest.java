@@ -52,18 +52,33 @@ public class ShrinkTest {
   }
 
   @Test
-  public void test27_001() throws Exception {
+  public void test3_001() throws Exception {
     File libzip = JillTestTools.createTempFile("lib", ".zip");
-    JillTestTools.runJillToZip(JillTestTools.getJackTestLibFolder("shrob/test027"), libzip);
-    String testName = "shrob/test027";
+    String testName = "shrob/test003";
     File testFolder = JillTestTools.getJackTestFolder(testName);
+    JillTestTools.runJillToZip(JillTestTools.getJackTestLibFolder(testName), libzip);
     File refFolder = new File(testFolder, "refsShrinking");
     ProguardFlags[] proguardflagsFiles = new ProguardFlags[] {
         dontObfuscateFlagFile,
-        new ProguardFlags(testFolder, "proguard.flags001"),
+        new ProguardFlags(testFolder, "proguard.flags001")};
+    JillTestTools.checkListing(defaultBootclasspath, new File[] {libzip},
+        JillTestTools.getJackTestsWithJackFolder(testName), proguardflagsFiles,
+        new File(refFolder, "expected-001.txt"));
+  }
+
+  @Test
+  public void test3_002() throws Exception {
+    File libzip = JillTestTools.createTempFile("lib", ".zip");
+    String testName = "shrob/test003";
+    File testFolder = JillTestTools.getJackTestFolder(testName);
+    JillTestTools.runJillToZip(JillTestTools.getJackTestLibFolder(testName), libzip);
+    File refFolder = new File(testFolder, "refsShrinking");
+    ProguardFlags[] proguardflagsFiles = new ProguardFlags[] {
+        dontObfuscateFlagFile,
+        new ProguardFlags(testFolder, "proguard.flags002"),
         generateInjars(libzip)};
     JillTestTools.checkListing(defaultBootclasspath, null,
         JillTestTools.getJackTestsWithJackFolder(testName), proguardflagsFiles,
-        new File(refFolder, "expected-001.txt"));
+        new File(refFolder, "expected-002.txt"));
   }
 }
