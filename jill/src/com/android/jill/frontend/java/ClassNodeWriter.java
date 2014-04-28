@@ -77,7 +77,8 @@ public class ClassNodeWriter extends JillWriter {
     writeMethods(cn);
     annotWriter.writeAnnotations(cn);
     writer.writeOpenNodeList(); // Markers
-    writeOriginalTypeInfoMarker(cn);
+    writeGenericSignatureMarker(cn);
+    writeSourceNameMarker(cn);
     writeThisRefTypeInfoMarker(cn);
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(cn);
@@ -98,7 +99,8 @@ public class ClassNodeWriter extends JillWriter {
     writeMethods(cn);
     annotWriter.writeAnnotations(cn);
     writer.writeOpenNodeList(); // Markers
-    writeOriginalTypeInfoMarker(cn);
+    writeGenericSignatureMarker(cn);
+    writeSourceNameMarker(cn);
     writeThisRefTypeInfoMarker(cn);
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(cn);
@@ -119,7 +121,8 @@ public class ClassNodeWriter extends JillWriter {
     writeMethods(cn);
     annotWriter.writeAnnotations(cn);
     writer.writeOpenNodeList(); // Markers
-    writeOriginalTypeInfoMarker(cn);
+    writeGenericSignatureMarker(cn);
+    writeSourceNameMarker(cn);
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(cn);
     writer.writeClose();
@@ -144,7 +147,8 @@ public class ClassNodeWriter extends JillWriter {
     writeAnnotationMethods(cn);
     annotWriter.writeAnnotations(cn);
     writer.writeOpenNodeList(); // Markers
-    writeOriginalTypeInfoMarker(cn);
+    writeGenericSignatureMarker(cn);
+    writeSourceNameMarker(cn);
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(cn);
     writer.writeClose();
@@ -173,27 +177,28 @@ public class ClassNodeWriter extends JillWriter {
     }
   }
 
-  private void writeOriginalTypeInfoMarker(@Nonnull ClassNode cn) throws IOException {
-    writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
-    writer.writeOpen();
+  private void writeGenericSignatureMarker(@Nonnull ClassNode cn) throws IOException {
     if (AsmHelper.isGenericSignature(cn)) {
+      writer.writeKeyword(Token.GENERIC_SINGATURE);
+      writer.writeOpen();
       writer.writeString(cn.signature);
-    } else {
-      writer.writeString(null);
+      writer.writeClose();
     }
+  }
+
+  private void writeSourceNameMarker(@Nonnull ClassNode cn) throws IOException {
+    writer.writeKeyword(Token.SOURCE_NAME);
+    writer.writeOpen();
     writer.writeString(AsmHelper.getSourceName(cn));
     writer.writeClose();
   }
 
-  private void writeOriginalTypeInfoMarker(@Nonnull FieldNode fn) throws IOException {
+  private void writeGenericSignatureMarker(@Nonnull FieldNode fn) throws IOException {
     if (fn.signature != null) {
-      writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
+      writer.writeKeyword(Token.GENERIC_SINGATURE);
       writer.writeOpen();
       writer.writeString(fn.signature);
-      writer.writeString(null);
       writer.writeClose();
-    } else {
-      writer.writeNull();
     }
   }
 
@@ -233,7 +238,7 @@ public class ClassNodeWriter extends JillWriter {
     }
     annotWriter.writeAnnotations(fn);
     writer.writeOpenNodeList(); // Markers
-    writeOriginalTypeInfoMarker(fn);
+    writeGenericSignatureMarker(fn);
     writer.writeCloseNodeList();
     sourceInfoWriter.writeDebugEnd(cn, fn);
     writer.writeClose();

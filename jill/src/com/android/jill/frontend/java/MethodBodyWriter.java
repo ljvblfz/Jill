@@ -283,10 +283,9 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
 
   private void writeOriginalTypeInfoMarker() throws IOException {
     if (currentMethod.signature != null) {
-      writer.writeKeyword(Token.ORIGINAL_TYPE_INFO);
+      writer.writeKeyword(Token.GENERIC_SINGATURE);
       writer.writeOpen();
       writer.writeString(currentMethod.signature);
-      writer.writeString(null);
       writer.writeClose();
     } else {
       writer.writeNull();
@@ -2004,9 +2003,13 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeCloseNodeList();
     writer.writeOpenNodeList();
     if (v.hasSignature()) {
-      writer.writeKeyword(Token.ORIGINAL_TYPE_INFO); // Marker original type info
+      writer.writeKeyword(Token.GENERIC_SINGATURE); // Marker generic signature
       writer.writeOpen();
       writer.writeString(v.getSignature());
+      writer.writeClose();
+
+      writer.writeKeyword(Token.SOURCE_NAME); // Marker source name
+      writer.writeOpen();
       writer.writeString(AsmHelper.getSourceName(currentClass));
       writer.writeClose();
     }
@@ -2258,9 +2261,13 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     annotWriter.writeAnnotations(currentMethod, parameterAnnotationIdx);
     writer.writeOpenNodeList();
     if (param.hasSignature()) {
-      writer.writeKeyword(Token.ORIGINAL_TYPE_INFO); // Marker original type info
+      writer.writeKeyword(Token.GENERIC_SINGATURE); // Marker generic signature
       writer.writeOpen();
       writer.writeString(param.getSignature());
+      writer.writeClose();
+
+      writer.writeKeyword(Token.SOURCE_NAME); // Marker source name
+      writer.writeOpen();
       writer.writeString(AsmHelper.getSourceName(currentClass));
       writer.writeClose();
     }
