@@ -56,8 +56,11 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnegative;
@@ -1540,9 +1543,43 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         break;
       }
       case SWAP: {
-        assert nextFrame != null;
-        writeAssign(frame, TOP_OF_STACK, nextFrame, TOP_OF_STACK - 1);
-        writeAssign(frame, TOP_OF_STACK - 1, nextFrame, TOP_OF_STACK);
+        // frame and nextFrame have the same height, thus frame can always be used to compute stack
+        // variables.
+        Variable tmpVar = getTempVarFromTopOfStack(frame);
+
+        // tmpVar = frame.stack[frame.stack.size() + TOP_OF_STACK - 1]
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeCatchBlockIds(currentCatchList);
+        writer.writeKeyword(Token.EXPRESSION_STATEMENT);
+        writer.writeOpen();
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeKeyword(Token.ASG_OPERATION);
+        writer.writeOpen();
+        writeLocalRef(tmpVar);
+        writeStackAccess(frame, TOP_OF_STACK - 1);
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
+
+        // frame.stack[frame.stack.size() + TOP_OF_STACK - 1] =
+        // frame.stack[frame.stack.size() + TOP_OF_STACK]
+        writeAssign(frame, TOP_OF_STACK, frame, TOP_OF_STACK - 1);
+
+        // frame.stack[frame.stack.size() + TOP_OF_STACK] = tmpVar
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeCatchBlockIds(currentCatchList);
+        writer.writeKeyword(Token.EXPRESSION_STATEMENT);
+        writer.writeOpen();
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeKeyword(Token.ASG_OPERATION);
+        writer.writeOpen();
+        writeStackAccess(frame, TOP_OF_STACK);
+        writeLocalRef(tmpVar);
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
         break;
       }
       case DUP: {
@@ -1947,8 +1984,9 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private void writeLocals() throws IOException {
     writer.writeOpenNodeList();
 
-    for (Variable v : collectLocals()) {
-      writeLocal(v);
+    Iterator<Variable> varIt = collectLocals();
+    while (varIt.hasNext()) {
+      writeLocal(varIt.next());
     }
 
     writer.writeCloseNodeList();
@@ -2111,9 +2149,8 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   }
 
   @Nonnull
-  private List<Variable> collectLocals() {
-//    Set<Variable> locals = new HashSet<Variable>();
-    List<Variable> locals = new ArrayList<Variable>();
+  private Iterator<Variable> collectLocals() {
+    Set<Variable> locals = new HashSet<Variable>();
     Frame<BasicValue>[] frames = analyzer.getFrames();
     for (int frameIdx = 0; frameIdx < frames.length; frameIdx++) {
       currentPc = frameIdx;
@@ -2124,20 +2161,35 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
           if (bv != BasicValue.UNINITIALIZED_VALUE) {
             Variable local = getLocalVariable(frame, localIdx);
             if (!local.isParameter() && !local.isThis()) {
-              locals.remove(local);
               locals.add(local);
             }
           }
         }
         for (int stackIdx = 0; stackIdx < frame.getStackSize(); stackIdx++) {
           Variable v = getStackVariable(frame, -stackIdx - 1);
-          locals.remove(v);
           locals.add(v);
         }
       }
     }
 
-    return locals;
+    // Do not forget to collect temporary variable required by some instructions.
+    for (int insnIdx = 0; insnIdx < currentMethod.instructions.size(); insnIdx++) {
+      AbstractInsnNode insn = currentMethod.instructions.get(insnIdx);
+      if (insn.getOpcode() == SWAP) {
+        locals.add(getTempVarFromTopOfStack(frames[insnIdx]));
+      }
+    }
+
+    return locals.iterator();
+  }
+
+  @Nonnull
+  private Variable getTempVarFromTopOfStack(@Nonnull Frame<BasicValue> frame) {
+    Variable topOfStackBeforeInst = getStackVariable(frame, TOP_OF_STACK);
+    String tmpVarId = "-swap_tmp_" + typeToUntypedDesc(topOfStackBeforeInst.getType());
+    Variable tmpVariable =
+        getVariable(tmpVarId, tmpVarId, topOfStackBeforeInst.getType(), null);
+    return tmpVariable;
   }
 
   private void writeParameters()
