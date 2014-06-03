@@ -88,8 +88,7 @@ public class JillTestTools extends TestTools {
       @CheckForNull JarJarRules jarjarRules,
       @CheckForNull ProguardFlags[] proguardFlags) throws Exception {
 
-    Options options = buildCommandLineArgs(bootclasspath, classpath, fileOrSourceList,
-        true /* useOnlyCompatibleOptions */);
+    Options options = buildCommandLineArgs(bootclasspath, classpath, fileOrSourceList);
 
     boolean useEcjAsRefCompiler = withDebugInfo;
 
