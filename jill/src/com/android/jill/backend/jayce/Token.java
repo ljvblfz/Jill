@@ -96,7 +96,7 @@ public enum Token {
   FIELD_REF("field-ref"),
   FLOAT_LITERAL("float"),
   FOR_STATEMENT("for"),
-  GENERIC_SINGATURE("generic-signature"),
+  GENERIC_SIGNATURE("generic-signature"),
   GOTO("goto"),
   GTE_OPERATION(">="),
   GT_OPERATION(">"),
