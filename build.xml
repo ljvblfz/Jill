@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (C) 2014 The Android Open Source Project
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="jill" default="dist">
+
+  <import file="../jack/build.xml"/>
+
+  <target name="dist" depends="jill"/>
+
+  <target name="clean" depends="jill-clean,
+    asm4-clean" />
+
+  <dirname property="jill-project.dir" file="${ant.file.jill}"/>
+
+  <property name="jill.dir" value="${jill-project.dir}/jill" />
+  <property name="asm4.dir" value="${jill-project.dir}/asm4" />
+
+
+  <!-- ******************* -->
+  <!-- jill                -->
+  <!-- ******************* -->
+  <property name="jill.build.dir" value="${jill.dir}/build" />
+  <property name="jill.libs.dir" value="${jill.dir}/libs" />
+  <property name="jill.build.outdir" value="${jill.build.dir}/classes" />
+  <property name="jill.dist.dir" value="${jill.dir}/dist" />
+  <property name="jill.execname" value="jill.jar" />
+
+  <target name="jill-clean">
+    <delete dir="${jill.build.dir}" />
+    <delete dir="${jill.dist.dir}" />
+    <delete dir="${jill.libs.dir}" />
+  </target>
+
+  <target name="jill-copy-libs" depends="guava-lib,asm4-lib,args4j-lib,jsr305-lib,
+    dexcomparator-lib">
+    <copy todir="${jill.libs.dir}" flatten="true">
+      <filelist id="jill.libs.filelist" dir="/" >
+        <file name="${guava.dist.dir}/${guava.libname}"/>
+        <file name="${args4j.dist.dir}/${args4j.libname}"/>
+        <file name="${jsr305.dist.dir}/${jsr305.libname}"/>
+        <file name="${asm4.dist.dir}/${asm4.libname}"/>
+        <file name="${dexcomparator.dist.dir}/${dexcomparator.libname}"/>
+      </filelist>
+    </copy>
+  </target>
+
+  <target name="jill" depends="jill-copy-libs">
+    <property name="jill.base.version.name" value="0.1" />
+    <property name="jill.base.version.code" value="001" />
+    <!-- project layout -->
+    <mkdir dir="${jill.build.outdir}"/>
+    <mkdir dir="${jill.dist.dir}"/>
+    <!-- generate jill.properties -->
+    <property environment="env"/>
+    <property name="jill.version.name.tag" value="eng.${env.USER}"/>
+    <propertyfile file="${jill.build.outdir}/jill.properties">
+      <entry key="jill.version" value="${jill.base.version.name}.${jill.base.version.code}.${jill.version.name.tag}"/>
+    </propertyfile>
+    <!-- compile -->
+    <javac srcdir="${jill.dir}/src"
+          destdir="${jill.build.outdir}"
+          source="1.5" target="1.5"
+          debug="true" includeantruntime="false">
+      <classpath>
+        <fileset dir="${jill.libs.dir}">
+           <include name="**/*.jar"/>
+         </fileset>
+      </classpath>
+    </javac>
+    <!-- package -->
+    <copy todir="${jill.build.outdir}">
+      <fileset dir="${guava.build.outdir}">
+        <include name="**/*.class" />
+      </fileset>
+      <fileset dir="${args4j.build.outdir}">
+        <include name="**/*.class" />
+      </fileset>
+      <fileset dir="${jsr305.build.outdir}">
+        <include name="**/*.class" />
+      </fileset>
+      <fileset dir="${asm4.build.outdir}">
+        <include name="**/*.class" />
+      </fileset>
+    </copy>
+    <jar destfile="${jill.dist.dir}/${jill.execname}"
+          manifest="${jill.dir}/etc/manifest.txt"
+          basedir="${jill.build.outdir}"
+          includes="**"/>
+  </target>
+
+
+  <!-- ******************* -->
+  <!-- asm4                -->
+  <!-- ******************* -->
+  <property name="asm4.build.dir" value="${asm4.dir}/build" />
+  <property name="asm4.build.outdir" value="${asm4.build.dir}/classes" />
+  <property name="asm4.dist.dir" value="${asm4.dir}/dist" />
+  <property name="asm4.libname" value="asm4-lib.jar" />
+
+  <target name="asm4-clean">
+    <delete dir="${asm4.build.dir}" />
+    <delete dir="${asm4.dist.dir}" />
+  </target>
+
+  <target name="asm4-lib">
+    <!-- project layout -->
+    <mkdir dir="${asm4.build.outdir}"/>
+    <mkdir dir="${asm4.dist.dir}"/>
+    <!-- compile -->
+    <javac srcdir="${asm4.dir}/src"
+          destdir="${asm4.build.outdir}"
+          source="1.5" target="1.5"
+          debug="true" includeantruntime="false"/>
+    <!-- package -->
+    <jar destfile="${asm4.dist.dir}/${asm4.libname}"
+          basedir="${asm4.build.outdir}"
+          includes="**"/>
+  </target>
+
+</project>
+
+
