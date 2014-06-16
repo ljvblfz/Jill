@@ -17,7 +17,6 @@
 package com.android.jill.frontend.java;
 
 import com.android.jill.ContainerType;
-import com.android.jill.Jill;
 import com.android.jill.JillException;
 import com.android.jill.Options;
 import com.android.jill.backend.jayce.JayceWriter;
@@ -280,7 +279,7 @@ public class JavaTransformer {
     JayceWriter writer = new JayceWriter(os);
 
       writer.writeHeader(
-          "jayce(2.13 \"" + Jill.FILE_ENCODING + "\" \"Jill version : " + version + "\")");
+          "jayce(2.14 \"jill " + version + "\")");
 
       return writer;
   }

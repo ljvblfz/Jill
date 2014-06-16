@@ -38,9 +38,6 @@ public class Jill {
   @Nonnull
   private final String version;
 
-  @Nonnull
-  public static final String FILE_ENCODING = "UTF-8";
-
   public Jill(@Nonnull Options options, @Nonnull String version) {
     this.options = options;
     this.version = version;
