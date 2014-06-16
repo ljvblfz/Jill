@@ -187,7 +187,7 @@ public class ClassNodeWriter extends JillWriter {
   }
 
   private void writeSourceNameMarker(@Nonnull ClassNode cn) throws IOException {
-    writer.writeKeyword(Token.SOURCE_NAME);
+    writer.writeKeyword(Token.SIMPLE_NAME);
     writer.writeOpen();
     writer.writeString(AsmHelper.getSourceName(cn));
     writer.writeClose();
