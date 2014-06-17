@@ -141,7 +141,7 @@ public enum Token {
   SHORT_LITERAL("short"),
   SHR_OPERATION(">>"),
   SHRU_OPERATION(">>>"),
-  SOURCE_NAME("source-name"),
+  SIMPLE_NAME("simple-name"),
   SUB_OPERATION("-"),
   STRING_LITERAL("string"),
   SWITCH_STATEMENT("switch"),
