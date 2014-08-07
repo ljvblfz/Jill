@@ -125,7 +125,7 @@ public class JillTestTools extends TestTools {
     compileJackToDex(new Options(), jackFile, jackDex, false);
 
     // Compare Jack Dex file to reference
-    new DexComparator().compare(refDex, jackDex, withDebugInfo, /* strict */false,
-        /* compareDebugInfoBinary */ false, /* compareInstructionNumber */ false, 0f);
+    new DexComparator(withDebugInfo, /* strict */false, /* compareDebugInfoBinary */ false,
+        /* compareInstructionNumber */ false, 0f).compare(refDex, jackDex);
   }
 }
