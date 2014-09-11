@@ -16,6 +16,8 @@
 
 package com.android.jill.frontend.java.analyzer;
 
+import com.google.common.base.Strings;
+
 import com.android.jill.JillException;
 
 import org.objectweb.asm.Type;
@@ -111,7 +113,9 @@ public class JillAnalyzer extends BasicInterpreter {
           if (componentUnion == BasicValue.UNINITIALIZED_VALUE) {
             return BasicValue.REFERENCE_VALUE;
           }
-          return new BasicValue(Type.getType("[" + componentUnion.getType().getDescriptor()));
+          return new BasicValue(Type.getType(
+              Strings.repeat("[", Math.min(type1.getDimensions(), type2.getDimensions()))
+              + componentUnion.getType().getDescriptor()));
         }
       } else if (type1.getSort() == Type.OBJECT && type2.getSort() == Type.OBJECT) {
         if (isKnownNull(type1)) {
