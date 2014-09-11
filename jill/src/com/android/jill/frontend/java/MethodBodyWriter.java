@@ -153,7 +153,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private static final int TOP_OF_STACK = -1;
 
   @Nonnull
-  private final List<String> currentCatchList = new ArrayList<String>();
+  private final Set<String> currentCatchList = new HashSet<String>();
 
   @Nonnegative
   private int currentLine = 0;
@@ -357,7 +357,11 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         // Jack represents finally by a catch on java.lang.Object.
         catchedType = Type.getType(Object.class);
       } else {
-        catchedType = Type.getObjectType(tryCatchNode.type);
+        // If there is multi catches, it is not possible to compute precisely the common type of
+        // exceptions without having the full classpath and by loading all classes. Jill uses
+        // Throwable as common type even when a more precise type is known.
+        // This type will be cast with a reinterpret cast to the right type when it will be used.
+        catchedType = Type.getType(Throwable.class);
       }
       String id = "catchedExceptionNotUsed" + (unusedVarCount++);
       declaringCatchVariable = new Variable(id, id, catchedType, null);
@@ -491,10 +495,21 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         writer.writeOpen();
         writer.writeId(getCatchId(tryCatchNode.handler));
 
-        writer.writeOpen();
-        writer.writeInt(1);
-        writer.writeId(declaringCatchVariable.getType().getDescriptor());
-        writer.writeClose();
+        // Take into account multi catches by computing the list of caught types for this handler
+        List<String> ids = new ArrayList<String>();
+        if (tryCatchNode.type == null) {
+          // Jack represents finally by a catch on java.lang.Object.
+          ids.add(Type.getType(Object.class).getDescriptor());
+        } else {
+          ids.add(Type.getObjectType(tryCatchNode.type).getDescriptor());
+          for (TryCatchBlockNode tryCatchNode2 : currentMethod.tryCatchBlocks) {
+            if (labelNode == tryCatchNode2.handler && tryCatchNode != tryCatchNode2
+                && !tryCatchNode.type.equals(tryCatchNode2.type)) {
+              ids.add(Type.getObjectType(tryCatchNode2.type).getDescriptor());
+            }
+          }
+        }
+        writer.writeIds(ids);
 
         writeLocal(declaringCatchVariable);
 

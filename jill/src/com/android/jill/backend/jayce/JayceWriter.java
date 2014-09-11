@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.CheckForNull;
@@ -166,7 +167,7 @@ public class JayceWriter {
     writeClose();
   }
 
-  public void writeCatchBlockIds(@Nonnull List<String> list) throws IOException {
+  public void writeCatchBlockIds(@Nonnull Set<String> list) throws IOException {
     List<String> removedIds = new ArrayList<String>(currentCatchBlockList.size());
     List<String> addedIds = new ArrayList<String>(list.size());
 
