@@ -21,6 +21,7 @@ import com.android.jack.JarJarRules;
 import com.android.jack.Options;
 import com.android.jack.ProguardFlags;
 import com.android.jack.TestTools;
+import com.android.jack.backend.dex.DexFileWriter;
 import com.android.jack.util.ExecuteFile;
 
 import java.io.File;
@@ -121,11 +122,11 @@ public class JillTestTools extends TestTools {
     runJill(refJar, jackFile);
 
     // Run Jack on .jack
-    File jackDex = new File(testDir, "testjack.dex");
-    compileJackToDex(new Options(), jackFile, jackDex, false);
+    File jackDexFolder = TestTools.createTempDir("jack", "dex");
+    compileJackToDex(new Options(), jackFile, jackDexFolder, false);
 
     // Compare Jack Dex file to reference
     new DexComparator(withDebugInfo, /* strict */false, /* compareDebugInfoBinary */ false,
-        /* compareInstructionNumber */ false, 0f).compare(refDex, jackDex);
+        /* compareInstructionNumber */ false, 0f).compare(refDex, new File(jackDexFolder, DexFileWriter.DEX_FILENAME));
   }
 }
