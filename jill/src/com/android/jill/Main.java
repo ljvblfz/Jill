@@ -117,6 +117,11 @@ public class Main {
       Properties prop = new Properties();
       prop.load(is);
       version = prop.getProperty("jill.version", "Unknown (no jill.version entry)");
+
+      String codeBase = prop.getProperty("jill.version.codebase");
+      if (codeBase != null) {
+        version += " (" + codeBase + ")";
+      }
     }
 
     return version;
