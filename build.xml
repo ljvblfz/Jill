@@ -66,9 +66,8 @@
     <mkdir dir="${jill.dist.dir}"/>
     <!-- generate jill.properties -->
     <property environment="env"/>
-    <property name="jill.version.name.tag" value="eng.${env.USER}"/>
     <propertyfile file="${jill.build.outdir}/jill.properties">
-      <entry key="jill.version" value="${jill.base.version.name}.${jill.base.version.code}.${jill.version.name.tag}"/>
+      <entry key="jill.version" value="${jill.base.version.name}.${jill.base.version.code}"/>
     </propertyfile>
     <!-- compile -->
     <javac srcdir="${jill.dir}/src"
