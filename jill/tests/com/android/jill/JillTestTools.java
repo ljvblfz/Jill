@@ -35,7 +35,18 @@ import javax.annotation.Nonnull;
 public class JillTestTools extends TestTools {
 
   @Nonnull
+  private static final String JILL_UNIT_TESTS_PATH = "toolchain/jill/jill/tests/";
+
+  @Nonnull
+  private static final String JILL_PACKAGE = "com/android/jill/";
+
+  @Nonnull
   private static final File JILL = getFromAndroidTree("out/host/linux-x86/framework/jill.jar");
+
+  @Nonnull
+  public static File getJillTestFolder(@Nonnull String testName) {
+    return getFromAndroidTree(JILL_UNIT_TESTS_PATH + JILL_PACKAGE + testName);
+  }
 
   public static void runJill(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
     String[] args = new String[] {"java",

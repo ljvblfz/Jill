@@ -103,7 +103,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := jill
 LOCAL_JAVA_LIBRARIES := \
   libjackunittests \
   sched-build \
-  $(TEST_STATIC_JAVA_LIBRARIES)
+  schedlib
 
 LOCAL_REQUIRED_MODULES:= \
   core \

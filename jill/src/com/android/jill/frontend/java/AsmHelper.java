@@ -37,9 +37,14 @@ import javax.annotation.Nonnull;
  */
 public class AsmHelper {
 
+  @Nonnull
+  private static final String JAVA_LANG_ENUM = "java/lang/Enum";
+
   private static final int JAVA_ACCESS_FLAGS_MASK = 0xFFFF;
 
+  @Nonnull
   private static final String GENERIC_SIGNATURE_START = "<";
+  @Nonnull
   private static final String GENERIC_SIGNATURE_END = ">";
 
   public static boolean isGenericSignature(@Nonnull ClassNode cn) {
@@ -59,7 +64,11 @@ public class AsmHelper {
   }
 
   public static boolean isEnum(@Nonnull ClassNode cn) {
-    return ((cn.access & Opcodes.ACC_ENUM) != 0);
+    if ((cn.access & Opcodes.ACC_ENUM) != 0) {
+      assert cn.superName != null;
+      return cn.superName.equals(JAVA_LANG_ENUM);
+    }
+    return false;
   }
 
   public static boolean isStatic(@Nonnull FieldNode fn) {

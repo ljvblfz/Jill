@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="libs/dexcomparator-lib.jar"/>
 	<classpathentry kind="lib" path="libs/guava-lib.jar"/>
 	<classpathentry kind="lib" path="libs/jsr305-lib.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Scheduler"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
