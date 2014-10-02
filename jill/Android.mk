@@ -96,7 +96,7 @@ include $(BUILD_HOST_JAVA_LIBRARY)
 
 LIB_JILL_UNIT_TESTS := $(LOCAL_BUILT_MODULE)
 
-local_unit_libs := $(call java-lib-files,core-hostdex junit4-hostdex-jack,true)
+local_unit_libs := $(call java-lib-files,core-libart-hostdex junit4-hostdex-jack,true)
 
 .PHONY: test-jill
 test-jill-unit: PRIVATE_RUN_TESTS := ./run-jill-unit-tests
