@@ -81,10 +81,6 @@ LOCAL_JARJAR_RULES := $(LOCAL_PATH)/jarjar-rules.txt
 
 include $(BUILD_HOST_JAVA_LIBRARY)
 
-# Include this library in the build server's output directory
-$(call dist-for-goals, dist_files, $(LOCAL_BUILT_MODULE):jill-jarjar-asm.jar)
-
-
 #
 # Build Jill tests
 #
