@@ -126,7 +126,7 @@ public class JillTestTools extends TestTools {
     File refDex = files.dexFile;
 
     // Run Jill on generated class file
-    File jackFile = new File(testDir, "test.jayce");
+    File jackFile = new File(testDir, "test.jack");
     if (!jackFile.exists() && !jackFile.mkdirs()) {
       throw new IOException("Could not create directory \"" + testDir.getName() + "\"");
     }

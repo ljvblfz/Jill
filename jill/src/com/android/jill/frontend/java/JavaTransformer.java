@@ -52,7 +52,7 @@ public class JavaTransformer {
   private final Options options;
 
   @Nonnull
-  private static final String JAYCE_FILE_EXTENSION = ".jayce";
+  private static final String JAYCE_FILE_EXTENSION = ".jack";
   @Nonnull
   private static final char TYPE_NAME_SEPARATOR = '/';
 
