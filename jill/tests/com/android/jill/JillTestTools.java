@@ -18,11 +18,9 @@ package com.android.jill;
 
 import com.android.jack.DexComparator;
 import com.android.jack.JarJarRules;
-import com.android.jack.Options;
 import com.android.jack.ProguardFlags;
 import com.android.jack.TestTools;
 import com.android.jack.backend.dex.DexFileWriter;
-import com.android.jack.util.ExecuteFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,36 +47,24 @@ public class JillTestTools extends TestTools {
   }
 
   public static void runJill(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
-    String[] args = new String[] {"java",
-        "-jar",
-        JILL.getAbsolutePath(),
-        "-o",
-        outputFile.getAbsolutePath(),
-        inputFile.getAbsolutePath()};
+    String[] args = new String[] {
+      "-o",
+      outputFile.getAbsolutePath(),
+      inputFile.getAbsolutePath()};
 
-    ExecuteFile execFile = new ExecuteFile(args);
-    if (!execFile.run()) {
-      throw new RuntimeException("Call to jill exited with an error");
-    }
+    Options options = Main.getOptions(args);
+    new Jill(options, "").process(options.getBinaryFile());
   }
 
   public static void runJillToZip(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
-    String[] args = new String[] {"java",
-        "-jar",
-        JillTestTools.JILL.getAbsolutePath(),
-        "-o",
+    String[] args = new String[] {"-o",
         outputFile.getAbsolutePath(),
         inputFile.getAbsolutePath(),
         "-v",
-        "-c", "zip"};
-
-    ExecuteFile execFile = new ExecuteFile(args);
-    execFile.setErr(System.err);
-    execFile.setOut(System.out);
-    execFile.setVerbose(true);
-    if (!execFile.run()) {
-      throw new RuntimeException("Call to jill exited with an error");
-    }
+        "-c",
+        "zip"};
+    Options options = Main.getOptions(args);
+    new Jill(options, "").process(options.getBinaryFile());
   }
 
   public static void checkStructureWithJill(@CheckForNull File[] refBootclasspath,
@@ -100,7 +86,8 @@ public class JillTestTools extends TestTools {
       @CheckForNull JarJarRules jarjarRules,
       @CheckForNull ProguardFlags[] proguardFlags) throws Exception {
 
-    Options options = buildCommandLineArgs(bootclasspath, classpath, fileOrSourceList);
+    com.android.jack.Options options =
+        buildCommandLineArgs(bootclasspath, classpath, fileOrSourceList);
 
     boolean useEcjAsRefCompiler = withDebugInfo;
 
@@ -134,7 +121,7 @@ public class JillTestTools extends TestTools {
 
     // Run Jack on .jack
     File jackDexFolder = TestTools.createTempDir("jack", "dex");
-    compileJackToDex(new Options(), jackFile, jackDexFolder, false);
+    compileJackToDex(new com.android.jack.Options(), jackFile, jackDexFolder, false);
 
     // Compare Jack Dex file to reference
     new DexComparator(withDebugInfo, /* strict */false, /* compareDebugInfoBinary */ false,
