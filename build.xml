@@ -83,16 +83,16 @@
     <!-- package -->
     <copy todir="${jill.build.outdir}">
       <fileset dir="${guava.build.outdir}">
-        <include name="**/*.class" />
+        <include name="**/*" />
       </fileset>
       <fileset dir="${args4j.build.outdir}">
-        <include name="**/*.class" />
+        <include name="**/*" />
       </fileset>
       <fileset dir="${jsr305.build.outdir}">
-        <include name="**/*.class" />
+        <include name="**/*" />
       </fileset>
       <fileset dir="${asm4.build.outdir}">
-        <include name="**/*.class" />
+        <include name="**/*" />
       </fileset>
     </copy>
     <jar destfile="${jill.dist.dir}/${jill.execname}"
