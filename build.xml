@@ -19,9 +19,9 @@
 
   <import file="../jack/build.xml"/>
 
-  <target name="dist" depends="jill"/>
+  <target name="dist" depends="jill, jillunittests"/>
 
-  <target name="clean" depends="jill-clean,
+  <target name="clean" depends="jill-clean, jillunittests-clean,
     asm4-clean" />
 
   <dirname property="jill-project.dir" file="${ant.file.jill}"/>
@@ -33,7 +33,7 @@
   <!-- ******************* -->
   <!-- jill                -->
   <!-- ******************* -->
-  <property name="jill.build.dir" value="${jill.dir}/build" />
+  <property name="jill.build.dir" value="${jill.dir}/build/jill" />
   <property name="jill.libs.dir" value="${jill.dir}/libs" />
   <property name="jill.build.outdir" value="${jill.build.dir}/classes" />
   <property name="jill.dist.dir" value="${jill.dir}/dist" />
@@ -99,6 +99,48 @@
           manifest="${jill.dir}/etc/manifest.txt"
           basedir="${jill.build.outdir}"
           includes="**"/>
+  </target>
+
+
+  <!-- ******************* -->
+  <!-- jillunittests       -->
+  <!-- ******************* -->
+  <property name="jillunittests.build.dir" value="${jill.dir}/build/jillunittests" />
+  <property name="jillunittests.build.outdir" value="${jillunittests.build.dir}/classes" />
+  <property name="jillunittests.execname" value="jillunittests.jar" />
+
+  <target name="jillunittests-clean">
+    <delete dir="${jillunittests.build.dir}" />
+    <delete dir="${jill.dist.dir}/${jillunittests.execname}" />
+  </target>
+
+  <target name="jillunittests" depends="jill, jackunittests">
+    <!-- project layout -->
+    <mkdir dir="${jillunittests.build.outdir}"/>
+    <!-- compile -->
+    <javac srcdir="${jill.dir}/tests"
+          destdir="${jillunittests.build.outdir}"
+          source="1.5" target="1.5"
+          debug="true" includeantruntime="false">
+      <classpath>
+        <filelist dir="/">
+          <file name="${jill.dist.dir}/${jill.execname}" />
+          <file name="${jackunittests.dist.dir}/${jackunittests.execname}" />
+        </filelist>
+      </classpath>
+    </javac>
+    <!-- package -->
+    <copy todir="${jillunittests.build.outdir}">
+        <fileset dir="${jill.build.outdir}">
+          <include name="**/*" />
+        </fileset>
+        <filelist dir="/">
+        <file name="${jackunittests.dist.dir}/${jackunittests.execname}" />
+      </filelist>
+    </copy>
+    <jar destfile="${jill.dist.dir}/${jillunittests.execname}"
+            basedir="${jillunittests.build.outdir}"
+            includes="**"/>
   </target>
 
 
