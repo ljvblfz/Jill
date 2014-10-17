@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="libs/guava-lib.jar"/>
 	<classpathentry kind="lib" path="libs/jsr305-lib.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Scheduler"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Dx"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
