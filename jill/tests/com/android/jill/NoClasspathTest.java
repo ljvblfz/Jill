@@ -35,7 +35,7 @@ public class NoClasspathTest {
     File frameworkJackZip = JillTestTools.createTempFile("framework", ".zip");
     JillTestTools.runJillToZip(FRAMEWORK_JAR, frameworkJackZip);
 
-    File frameworkDex = JillTestTools.createTempFile("framework", ".dex");
+    File frameworkDex = JillTestTools.createTempDir("framework", "dex");
     JillTestTools.compileJackToDex(new com.android.jack.Options(), frameworkJackZip, frameworkDex,
         false);
   }

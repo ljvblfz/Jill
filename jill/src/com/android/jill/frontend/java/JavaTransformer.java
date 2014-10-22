@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -45,6 +46,42 @@ import javax.annotation.Nonnull;
  * Transforms java binary files into jayce.
  */
 public class JavaTransformer {
+
+  @Nonnull
+  private static final String LIB_MAJOR_VERSION = "0";
+
+  @Nonnull
+  private static final String LIB_MINOR_VERSION = "0";
+
+  @Nonnull
+  private static final String JAYCE_MAJOR_VERSION = "2";
+
+  @Nonnull
+  private static final String JAYCE_MINOR_VERSION = "14";
+
+  @Nonnull
+  private static final String KEY_LIB_MAJOR_VERSION = "lib.version.major";
+
+  @Nonnull
+  private static final String KEY_LIB_MINOR_VERSION = "lib.version.minor";
+
+  @Nonnull
+  private static final String KEY_LIB_EMITTER = "lib.emitter";
+
+  @Nonnull
+  private static final String KEY_LIB_EMITTER_VERSION = "lib.emitter.version";
+
+  @Nonnull
+  private static final String KEY_JAYCE = "jayce";
+
+  @Nonnull
+  private static final String KEY_JAYCE_MAJOR_VERSION = "jayce.version.major";
+
+  @Nonnull
+  private static final String KEY_JAYCE_MINOR_VERSION = "jayce.version.minor";
+
+  @Nonnull
+  private static final String JACK_LIBRARY_PROPERTIES = "jack.properties";
 
   @Nonnull
   private final String version;
@@ -66,6 +103,7 @@ public class JavaTransformer {
     try {
       if (options.getContainer() == ContainerType.ZIP) {
         zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
+        dumpJackLibraryProperties(zos);
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
@@ -77,6 +115,7 @@ public class JavaTransformer {
           }
         }
       } else {
+        dumpJackLibraryProperties(zos);
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
@@ -107,6 +146,7 @@ public class JavaTransformer {
       if (options.getContainer() == ContainerType.ZIP) {
         zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
       }
+      dumpJackLibraryProperties(zos);
       copyResources(jarFile, zos);
       transformJavaFiles(jarFile, zos);
     } catch (Exception e) {
@@ -117,6 +157,57 @@ public class JavaTransformer {
           zos.close();
         } catch (IOException e) {
           throw new JillException("Error closing zip.", e);
+        }
+      }
+    }
+  }
+
+  private void dumpJackLibraryProperties(@CheckForNull ZipOutputStream zos) {
+    Properties jackLibraryProperties = new Properties();
+    jackLibraryProperties.put(KEY_LIB_EMITTER, "jill");
+    jackLibraryProperties.put(KEY_LIB_EMITTER_VERSION, version);
+    jackLibraryProperties.put(KEY_LIB_MAJOR_VERSION, LIB_MAJOR_VERSION);
+    jackLibraryProperties.put(KEY_LIB_MINOR_VERSION, LIB_MINOR_VERSION);
+    jackLibraryProperties.put(KEY_JAYCE, String.valueOf(true));
+    jackLibraryProperties.put(KEY_JAYCE_MAJOR_VERSION, JAYCE_MAJOR_VERSION);
+    jackLibraryProperties.put(KEY_JAYCE_MINOR_VERSION, JAYCE_MINOR_VERSION);
+
+    if (zos != null) {
+      dumpPropertiesToZip(zos, jackLibraryProperties);
+    } else {
+      dumpPropertiesToFile(new File(options.getOutputDir(), JACK_LIBRARY_PROPERTIES),
+          jackLibraryProperties);
+    }
+  }
+
+  private void dumpPropertiesToZip(@Nonnull ZipOutputStream zos,
+      @Nonnull Properties libraryProperties) {
+    try {
+      ZipEntry entry = new ZipEntry(JACK_LIBRARY_PROPERTIES);
+      zos.putNextEntry(entry);
+      libraryProperties.store(zos, "Library Properties");
+    } catch (IOException e) {
+      throw new JillException("Error writing '" + JACK_LIBRARY_PROPERTIES + "' to output zip", e);
+    }
+  }
+
+  private void dumpPropertiesToFile(@Nonnull File outputFile,
+      @Nonnull Properties libraryProperties) {
+    File outputDir = options.getOutputDir();
+    File libraryPropertiesFile = new File(outputDir, JACK_LIBRARY_PROPERTIES);
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(libraryPropertiesFile);
+      libraryProperties.store(fos, "Library Properties");
+    } catch (IOException e) {
+      throw new JillException(
+          "Error writing '" + JACK_LIBRARY_PROPERTIES + "' to " + outputFile.getAbsolutePath(), e);
+    } finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          throw new JillException("Error closing output " + outputFile.getAbsolutePath(), e);
         }
       }
     }
@@ -154,7 +245,7 @@ public class JavaTransformer {
     while (entries.hasMoreElements()) {
       final JarEntry entry = entries.nextElement();
       String name = entry.getName();
-      if (!FileUtils.isJavaBinaryFile(name)) {
+      if (!FileUtils.isJavaBinaryFile(name) && !name.equals(JACK_LIBRARY_PROPERTIES)) {
         JarEntry fileEntry = jarFile.getJarEntry(name);
         if (!fileEntry.isDirectory()) {
           InputStream is = jarFile.getInputStream(fileEntry);
@@ -278,8 +369,8 @@ public class JavaTransformer {
   private JayceWriter createWriter(@Nonnull OutputStream os) throws IOException {
     JayceWriter writer = new JayceWriter(os);
 
-      writer.writeHeader(
-          "jayce(2.14 \"jill " + version + "\")");
+    writer.writeHeader(
+        "jayce(" + JAYCE_MAJOR_VERSION + "." + JAYCE_MINOR_VERSION + " \"jill " + version + "\")");
 
       return writer;
   }
