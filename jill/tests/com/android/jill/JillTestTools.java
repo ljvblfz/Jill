@@ -48,7 +48,7 @@ public class JillTestTools extends TestTools {
 
   public static void runJill(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
     String[] args = new String[] {
-      "-o",
+      "--output",
       outputFile.getAbsolutePath(),
       inputFile.getAbsolutePath()};
 
@@ -57,12 +57,10 @@ public class JillTestTools extends TestTools {
   }
 
   public static void runJillToZip(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
-    String[] args = new String[] {"-o",
+    String[] args = new String[] {"--output",
         outputFile.getAbsolutePath(),
         inputFile.getAbsolutePath(),
-        "-v",
-        "-c",
-        "zip"};
+        "-v"};
     Options options = Main.getOptions(args);
     new Jill(options, "").process(options.getBinaryFile());
   }

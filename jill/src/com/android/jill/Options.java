@@ -47,16 +47,12 @@ public class Options {
   protected boolean help;
 
   @CheckForNull
-  @Option(name = "-o", aliases = "--output",
-      usage = "output directory or file (see --container)",
-      metaVar = "FILE|DIRECTORY")
+  @Option(name = "--output", usage = "output file", metaVar = "FILE")
   protected File outputDirOrZip;
 
   @Option(name = "--version", usage = "display version")
   protected boolean version;
 
-  @Option(name = "-c", aliases = "--container", usage = "set container type (default: dir)",
-      metaVar = "[dir | zip]")
   protected ContainerType container = ContainerType.DIR;
 
   @Option(name = "--no-debug", usage = "disable debug info emission")
