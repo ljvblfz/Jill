@@ -16,11 +16,16 @@
 
 package com.android.jill;
 
+import com.android.sched.util.config.cli.TokenIterator;
+import com.android.sched.util.location.NoLocation;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.Nonnull;
@@ -30,7 +35,7 @@ import javax.annotation.Nonnull;
  */
 public class Main {
 
-  public static void main(@Nonnull String[] args) throws IOException {
+  public static void main(@Nonnull String[] args) {
     Options options = null;
 
     try {
@@ -61,6 +66,10 @@ public class Main {
         System.err.println("Try --help for help");
       }
       System.exit(ExitStatus.FAILURE_USAGE);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+
+      System.exit(ExitStatus.FAILURE_USAGE);
     } catch (JillException e) {
       if (options != null) {
         System.err.println("Binary transformation of " + options.getBinaryFile().getName()
@@ -79,13 +88,19 @@ public class Main {
   }
 
   @Nonnull
-  public static Options getOptions(@Nonnull String[] args) throws CmdLineException {
+  public static Options getOptions(@Nonnull String[] args) throws CmdLineException, IOException {
     Options options = new Options();
+
 
     CmdLineParser parser = new CmdLineParser(options);
     parser.setUsageWidth(100);
 
-    parser.parseArgument(args);
+    TokenIterator iterator = new TokenIterator(new NoLocation(), args);
+    List<String> list = new ArrayList<String>();
+    while (iterator.hasNext()) {
+      list.add(iterator.next());
+    }
+    parser.parseArgument(list);
     parser.stopOptionParsing();
 
     try {

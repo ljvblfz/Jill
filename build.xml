@@ -45,10 +45,11 @@
     <delete dir="${jill.libs.dir}" />
   </target>
 
-  <target name="jill-copy-libs" depends="guava-lib,asm4-lib,args4j-lib,jsr305-lib,
+  <target name="jill-copy-libs" depends="sched-lib,guava-lib,asm4-lib,args4j-lib,jsr305-lib,
     dexcomparator-lib">
     <copy todir="${jill.libs.dir}" flatten="true">
       <filelist id="jill.libs.filelist" dir="/" >
+        <file name="${schedlib.dist.dir}/${schedlib.libname}"/>
         <file name="${guava.dist.dir}/${guava.libname}"/>
         <file name="${args4j.dist.dir}/${args4j.libname}"/>
         <file name="${jsr305.dist.dir}/${jsr305.libname}"/>
@@ -83,6 +84,9 @@
     <!-- package -->
     <copy todir="${jill.build.outdir}">
       <fileset dir="${guava.build.outdir}">
+        <include name="**/*" />
+      </fileset>
+      <fileset dir="${schedlib.build.outdir}">
         <include name="**/*" />
       </fileset>
       <fileset dir="${args4j.build.outdir}">
