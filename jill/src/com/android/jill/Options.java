@@ -53,7 +53,7 @@ public class Options {
   @Option(name = "--version", usage = "display version")
   protected boolean version;
 
-  protected ContainerType container = ContainerType.DIR;
+  protected ContainerType container = ContainerType.ZIP;
 
   @Option(name = "--no-debug", usage = "disable debug info emission")
   protected boolean emitDebugInfo = true;
