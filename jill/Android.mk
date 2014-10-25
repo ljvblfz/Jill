@@ -31,7 +31,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
-  args4j-jack
+  args4j-jack \
+  schedlib
 
 ifneq "" "$(filter eng.%,$(BUILD_NUMBER))"
   JILL_VERSION_NAME_TAG := eng.$(USER)
@@ -69,7 +70,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
-  args4j-jack
+  args4j-jack \
+  schedlib
 
 intermediates := $(call local-intermediates-dir,COMMON)
 $(intermediates)/rsc/jill.properties:
