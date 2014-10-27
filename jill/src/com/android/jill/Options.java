@@ -40,7 +40,7 @@ public class Options {
       metaVar = "FILE|DIRECTORY")
   private File binaryFile;
 
-  @Option(name = "-v", aliases = "--verbose", usage = "enable verbosity (default: false)")
+  @Option(name = "--verbose", usage = "enable verbosity (default: false)")
   private  boolean verbose = false;
 
   @Option(name = "-h", aliases = "--help", usage = "display help")
