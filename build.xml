@@ -60,7 +60,7 @@
   </target>
 
   <target name="jill" depends="jill-copy-libs">
-    <property name="jill.base.version.name" value="0.1" />
+    <property name="jill.base.version.name" value="1.0" />
     <property name="jill.base.version.code" value="001" />
     <!-- project layout -->
     <mkdir dir="${jill.build.outdir}"/>
