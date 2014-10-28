@@ -16,7 +16,7 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-JILL_BASE_VERSION_NAME := 0.1
+JILL_BASE_VERSION_NAME := 1.0
 JILL_BASE_VERSION_CODE := 001
 
 LOCAL_MODULE := jill
@@ -43,7 +43,7 @@ endif
 JILL_VERSION_NAME := "$(JILL_BASE_VERSION_NAME).$(JILL_BASE_VERSION_CODE).$(JILL_VERSION_NAME_TAG)"
 
 intermediates := $(call local-intermediates-dir,COMMON)
-$(intermediates)/rsc/jill.properties:
+$(intermediates)/rsc/jill.properties: $(LOCAL_PATH)/Android.mk
 	$(hide) mkdir -p $(dir $@)
 	$(hide) echo "jill.version=$(JILL_VERSION_NAME)" > $@
 
