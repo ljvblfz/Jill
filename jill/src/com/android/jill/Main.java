@@ -112,7 +112,7 @@ public class Main {
     return options;
   }
 
-  public static void run(@Nonnull Options options) throws IOException {
+  public static void run(@Nonnull Options options) {
     new Jill(options, Main.getVersion()).process(options.getBinaryFile());
   }
 
@@ -124,18 +124,31 @@ public class Main {
   }
 
   @Nonnull
-  private static String getVersion() throws IOException {
-    String version = "Unknown (no ressource file)";
+  private static final String PROPERTIES_FILE = "jill.properties";
 
-    InputStream is = Main.class.getClassLoader().getResourceAsStream("jill.properties");
+  @Nonnull
+  public static String getVersion() {
+    String version = "Unknown (problem with " + PROPERTIES_FILE + " resource file)";
+
+    InputStream is = Main.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
     if (is != null) {
       Properties prop = new Properties();
-      prop.load(is);
-      version = prop.getProperty("jill.version", "Unknown (no jill.version entry)");
+      try {
+        prop.load(is);
+        String rawVersion = prop.getProperty("jill.version");
+        if (rawVersion != null) {
+          version = rawVersion;
 
-      String codeBase = prop.getProperty("jill.version.codebase");
-      if (codeBase != null) {
-        version += " (" + codeBase + ")";
+          String codeName = prop.getProperty("jill.version.codename");
+          if (codeName != null) {
+            version += " \'" + codeName + '\'';
+          }
+
+          String codeBase = prop.getProperty("jill.version.codebase", "engineering");
+          version += " (" + codeBase + ")";
+        }
+      } catch (IOException e) {
+        // Return default version
       }
     }
 

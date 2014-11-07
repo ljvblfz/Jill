@@ -60,16 +60,9 @@
   </target>
 
   <target name="jill" depends="jill-copy-libs">
-    <property name="jill.base.version.name" value="1.0" />
-    <property name="jill.base.version.code" value="001" />
     <!-- project layout -->
     <mkdir dir="${jill.build.outdir}"/>
     <mkdir dir="${jill.dist.dir}"/>
-    <!-- generate jill.properties -->
-    <property environment="env"/>
-    <propertyfile file="${jill.build.outdir}/jill.properties">
-      <entry key="jill.version" value="${jill.base.version.name}.${jill.base.version.code}"/>
-    </propertyfile>
     <!-- compile -->
     <javac srcdir="${jill.dir}/src"
           destdir="${jill.build.outdir}"
@@ -83,6 +76,9 @@
     </javac>
     <!-- package -->
     <copy todir="${jill.build.outdir}">
+      <fileset dir="${jill.dir}/rsc">
+        <include name="**/*" />
+      </fileset>
       <fileset dir="${guava.build.outdir}">
         <include name="**/*" />
       </fileset>

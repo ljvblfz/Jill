@@ -16,15 +16,13 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-JILL_BASE_VERSION_NAME := 1.0
-JILL_BASE_VERSION_CODE := 001
-
 LOCAL_MODULE := jill
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
+LOCAL_JAVA_RESOURCE_DIRS  := rsc
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
@@ -34,27 +32,10 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   args4j-jack \
   schedlib
 
-ifneq "" "$(filter eng.%,$(BUILD_NUMBER))"
-  JILL_VERSION_NAME_TAG := eng.$(USER)
-else
-  JILL_VERSION_NAME_TAG := $(BUILD_NUMBER)
-endif
-
-JILL_VERSION_NAME := "$(JILL_BASE_VERSION_NAME).$(JILL_BASE_VERSION_CODE).$(JILL_VERSION_NAME_TAG)"
-
-intermediates := $(call local-intermediates-dir,COMMON)
-$(intermediates)/rsc/jill.properties: $(LOCAL_PATH)/Android.mk
-	$(hide) mkdir -p $(dir $@)
-	$(hide) echo "jill.version=$(JILL_VERSION_NAME)" > $@
-
-LOCAL_JAVA_RESOURCE_FILES := $(intermediates)/rsc/jill.properties
-
 include $(BUILD_HOST_JAVA_LIBRARY)
 
 # Include this library in the build server's output directory
 $(call dist-for-goals, dist_files, $(LOCAL_BUILT_MODULE):jill.jar)
-
-
 
 include $(CLEAR_VARS)
 
@@ -64,6 +45,7 @@ LOCAL_MODULE_CLASS := EXECUTABLES
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
+LOCAL_JAVA_RESOURCE_DIRS  := rsc
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
@@ -73,12 +55,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   args4j-jack \
   schedlib
 
-intermediates := $(call local-intermediates-dir,COMMON)
-$(intermediates)/rsc/jill.properties:
-	$(hide) mkdir -p $(dir $@)
-	$(hide) echo "jill.version=$(JILL_VERSION_NAME)" > $@
-
-LOCAL_JAVA_RESOURCE_FILES := $(intermediates)/rsc/jill.properties
 LOCAL_JARJAR_RULES := $(LOCAL_PATH)/jarjar-rules.txt
 
 include $(BUILD_HOST_JAVA_LIBRARY)
