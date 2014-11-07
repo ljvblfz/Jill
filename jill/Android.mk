@@ -32,8 +32,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   args4j-jack \
   schedlib
 
-LOCAL_JAVA_RESOURCE_FILES := $(intermediates)/rsc/jill.properties
-
 include $(BUILD_HOST_JAVA_LIBRARY)
 
 # Include this library in the build server's output directory
@@ -57,7 +55,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   args4j-jack \
   schedlib
 
-LOCAL_JAVA_RESOURCE_FILES := $(intermediates)/rsc/jill.properties
 LOCAL_JARJAR_RULES := $(LOCAL_PATH)/jarjar-rules.txt
 
 include $(BUILD_HOST_JAVA_LIBRARY)
