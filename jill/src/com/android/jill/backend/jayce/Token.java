@@ -134,7 +134,7 @@ public enum Token {
   PREFIX_INC_OPERATION("prefix-inc"),
   PREFIX_NEG_OPERATION("neg"),
   PREFIX_NOT_OPERATION("not"),
-  PROGRAM("program"),
+  RESERVED("reserved"),
   REINTERPRETCAST_OPERATION("reinterpret-cast"),
   RETURN_STATEMENT("return"),
   SHL_OPERATION("<<"),
