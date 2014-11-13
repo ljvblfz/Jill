@@ -220,11 +220,6 @@ public class JayceWriter {
     writeStringInternal(id);
   }
 
-  public void writeHeader(@Nonnull String header) throws IOException {
-    writers.peek().writeBytes(header);
-    writeSpace();
-  }
-
   private void writeStringInternal(@CheckForNull String string) throws IOException {
     writers.peek().writeUTF(string);
   }

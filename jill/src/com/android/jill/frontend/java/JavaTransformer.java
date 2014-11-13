@@ -48,7 +48,7 @@ import javax.annotation.Nonnull;
 public class JavaTransformer {
 
   @Nonnull
-  private static final String LIB_MAJOR_VERSION = "0";
+  private static final String LIB_MAJOR_VERSION = "1";
 
   @Nonnull
   private static final String LIB_MINOR_VERSION = "0";
@@ -57,7 +57,7 @@ public class JavaTransformer {
   private static final String JAYCE_MAJOR_VERSION = "2";
 
   @Nonnull
-  private static final String JAYCE_MINOR_VERSION = "14";
+  private static final String JAYCE_MINOR_VERSION = "15";
 
   @Nonnull
   private static final String KEY_LIB_MAJOR_VERSION = "lib.version.major";
@@ -366,13 +366,9 @@ public class JavaTransformer {
     }
   }
 
-  private JayceWriter createWriter(@Nonnull OutputStream os) throws IOException {
+  private JayceWriter createWriter(@Nonnull OutputStream os) {
     JayceWriter writer = new JayceWriter(os);
-
-    writer.writeHeader(
-        "jayce(" + JAYCE_MAJOR_VERSION + "." + JAYCE_MINOR_VERSION + " \"jill " + version + "\")");
-
-      return writer;
+    return writer;
   }
 
   @Nonnull
