@@ -51,7 +51,7 @@ public class JavaTransformer {
   private static final String LIB_MAJOR_VERSION = "1";
 
   @Nonnull
-  private static final String LIB_MINOR_VERSION = "0";
+  private static final String LIB_MINOR_VERSION = "1";
 
   @Nonnull
   private static final String JAYCE_MAJOR_VERSION = "2";
@@ -84,18 +84,36 @@ public class JavaTransformer {
   private static final String JACK_LIBRARY_PROPERTIES = "jack.properties";
 
   @Nonnull
+  private static final String KEY_RSC = "rsc";
+
+  @Nonnull
   private final String version;
 
   private final Options options;
 
   @Nonnull
   private static final String JAYCE_FILE_EXTENSION = ".jayce";
+
+  @Nonnull
+  private static final String JAYCE_PREFIX_INTO_LIB = "jayce";
+
+  @Nonnull
+  private static final String RESOURCE_PREFIX_INTO_LIB = "rsc";
+
   @Nonnull
   private static final char TYPE_NAME_SEPARATOR = '/';
+
+  @Nonnull
+  private final Properties jackLibraryProperties;
 
   public JavaTransformer(@Nonnull String version, @Nonnull Options options) {
     this.version = version;
     this.options = options;
+    jackLibraryProperties = new Properties();
+    jackLibraryProperties.put(KEY_LIB_EMITTER, "jill");
+    jackLibraryProperties.put(KEY_LIB_EMITTER_VERSION, version);
+    jackLibraryProperties.put(KEY_LIB_MAJOR_VERSION, LIB_MAJOR_VERSION);
+    jackLibraryProperties.put(KEY_LIB_MINOR_VERSION, LIB_MINOR_VERSION);
   }
 
   public void transform(@Nonnull List<File> javaBinaryFiles) {
@@ -103,7 +121,6 @@ public class JavaTransformer {
     try {
       if (options.getContainer() == ContainerType.ZIP) {
         zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
-        dumpJackLibraryProperties(zos);
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
@@ -115,7 +132,6 @@ public class JavaTransformer {
           }
         }
       } else {
-        dumpJackLibraryProperties(zos);
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
@@ -127,6 +143,7 @@ public class JavaTransformer {
           }
         }
       }
+      dumpJackLibraryProperties(zos);
     } catch (IOException e) {
       throw new JillException("Transformation failure.", e);
     } finally {
@@ -146,9 +163,9 @@ public class JavaTransformer {
       if (options.getContainer() == ContainerType.ZIP) {
         zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
       }
-      dumpJackLibraryProperties(zos);
       copyResources(jarFile, zos);
       transformJavaFiles(jarFile, zos);
+      dumpJackLibraryProperties(zos);
     } catch (Exception e) {
       throw new JillException("Failed to transform " + jarFile.getName(), e);
     } finally {
@@ -163,15 +180,6 @@ public class JavaTransformer {
   }
 
   private void dumpJackLibraryProperties(@CheckForNull ZipOutputStream zos) {
-    Properties jackLibraryProperties = new Properties();
-    jackLibraryProperties.put(KEY_LIB_EMITTER, "jill");
-    jackLibraryProperties.put(KEY_LIB_EMITTER_VERSION, version);
-    jackLibraryProperties.put(KEY_LIB_MAJOR_VERSION, LIB_MAJOR_VERSION);
-    jackLibraryProperties.put(KEY_LIB_MINOR_VERSION, LIB_MINOR_VERSION);
-    jackLibraryProperties.put(KEY_JAYCE, String.valueOf(true));
-    jackLibraryProperties.put(KEY_JAYCE_MAJOR_VERSION, JAYCE_MAJOR_VERSION);
-    jackLibraryProperties.put(KEY_JAYCE_MINOR_VERSION, JAYCE_MINOR_VERSION);
-
     if (zos != null) {
       dumpPropertiesToZip(zos, jackLibraryProperties);
     } else {
@@ -251,10 +259,11 @@ public class JavaTransformer {
           InputStream is = jarFile.getInputStream(fileEntry);
           if (zos != null) {
             assert options.getContainer() == ContainerType.ZIP;
-            copyResourceToZip(is, zos, name);
+            copyResourceToZip(is, zos, RESOURCE_PREFIX_INTO_LIB + '/' + name);
           } else {
             assert options.getContainer() == ContainerType.DIR;
-            copyResourceToDir(is, options.getOutputDir(), name);
+            copyResourceToDir(is, options.getOutputDir(),
+                RESOURCE_PREFIX_INTO_LIB + File.pathSeparatorChar + name);
           }
         }
       }
@@ -265,7 +274,7 @@ public class JavaTransformer {
     try {
       ZipEntry zipEntry = new ZipEntry(name);
       zipOutputStream.putNextEntry(zipEntry);
-      copyResource(is, zipOutputStream, name);
+      copyResource(is, zipOutputStream);
     } catch (Exception e) {
       throw new JillException("Error writing resource " + name, e);
     }
@@ -277,7 +286,7 @@ public class JavaTransformer {
       File outputFile = new File(outputDir, name);
       createParentDirectories(outputFile);
       resourceOS = new FileOutputStream(outputFile);
-      copyResource(is, resourceOS, name);
+      copyResource(is, resourceOS);
     } catch (Exception e) {
       throw new JillException("Error writing resource " + name, e);
     } finally {
@@ -291,7 +300,8 @@ public class JavaTransformer {
     }
   }
 
-  private void copyResource(InputStream is, OutputStream os, String name) throws IOException {
+  private void copyResource(InputStream is, OutputStream os) throws IOException {
+    jackLibraryProperties.put(KEY_RSC, String.valueOf(true));
     OutputStream resourceOS = null;
     byte[] buffer = new byte[4096];
     int bytesRead;
@@ -368,12 +378,14 @@ public class JavaTransformer {
 
   private JayceWriter createWriter(@Nonnull OutputStream os) {
     JayceWriter writer = new JayceWriter(os);
+    setJayceProperties();
     return writer;
   }
 
   @Nonnull
   private static String getFilePath(@Nonnull String typeBinaryName) {
-    return typeBinaryName.replace(TYPE_NAME_SEPARATOR, File.separatorChar) + JAYCE_FILE_EXTENSION;
+    return JAYCE_PREFIX_INTO_LIB + File.separatorChar
+        + typeBinaryName.replace(TYPE_NAME_SEPARATOR, File.separatorChar) + JAYCE_FILE_EXTENSION;
   }
 
   @Nonnull
@@ -385,4 +397,9 @@ public class JavaTransformer {
     return cn;
   }
 
+  private void setJayceProperties() {
+    jackLibraryProperties.put(KEY_JAYCE, String.valueOf(true));
+    jackLibraryProperties.put(KEY_JAYCE_MAJOR_VERSION, JAYCE_MAJOR_VERSION);
+    jackLibraryProperties.put(KEY_JAYCE_MINOR_VERSION, JAYCE_MINOR_VERSION);
+  }
 }
