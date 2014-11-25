@@ -84,9 +84,6 @@ public class JavaTransformer {
   private static final String JACK_LIBRARY_PROPERTIES = "jack.properties";
 
   @Nonnull
-  private static final String KEY_RSC = "rsc";
-
-  @Nonnull
   private final String version;
 
   private final Options options;
@@ -96,9 +93,6 @@ public class JavaTransformer {
 
   @Nonnull
   private static final String JAYCE_PREFIX_INTO_LIB = "jayce";
-
-  @Nonnull
-  private static final String RESOURCE_PREFIX_INTO_LIB = "rsc";
 
   @Nonnull
   private static final char TYPE_NAME_SEPARATOR = '/';
@@ -163,7 +157,6 @@ public class JavaTransformer {
       if (options.getContainer() == ContainerType.ZIP) {
         zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
       }
-      copyResources(jarFile, zos);
       transformJavaFiles(jarFile, zos);
       dumpJackLibraryProperties(zos);
     } catch (Exception e) {
@@ -245,70 +238,6 @@ public class JavaTransformer {
         }
       }
     }
-  }
-
-  private void copyResources(@Nonnull JarFile jarFile, @CheckForNull ZipOutputStream zos)
-      throws IOException {
-    final Enumeration<JarEntry> entries = jarFile.entries();
-    while (entries.hasMoreElements()) {
-      final JarEntry entry = entries.nextElement();
-      String name = entry.getName();
-      if (!FileUtils.isJavaBinaryFile(name) && !name.equals(JACK_LIBRARY_PROPERTIES)) {
-        JarEntry fileEntry = jarFile.getJarEntry(name);
-        if (!fileEntry.isDirectory()) {
-          InputStream is = jarFile.getInputStream(fileEntry);
-          if (zos != null) {
-            assert options.getContainer() == ContainerType.ZIP;
-            copyResourceToZip(is, zos, RESOURCE_PREFIX_INTO_LIB + '/' + name);
-          } else {
-            assert options.getContainer() == ContainerType.DIR;
-            copyResourceToDir(is, options.getOutputDir(),
-                RESOURCE_PREFIX_INTO_LIB + File.pathSeparatorChar + name);
-          }
-        }
-      }
-    }
-  }
-
-  private void copyResourceToZip(InputStream is, ZipOutputStream zipOutputStream, String name) {
-    try {
-      ZipEntry zipEntry = new ZipEntry(name);
-      zipOutputStream.putNextEntry(zipEntry);
-      copyResource(is, zipOutputStream);
-    } catch (Exception e) {
-      throw new JillException("Error writing resource " + name, e);
-    }
-  }
-
-  private void copyResourceToDir(InputStream is, File outputDir, String name) {
-    OutputStream resourceOS = null;
-    try {
-      File outputFile = new File(outputDir, name);
-      createParentDirectories(outputFile);
-      resourceOS = new FileOutputStream(outputFile);
-      copyResource(is, resourceOS);
-    } catch (Exception e) {
-      throw new JillException("Error writing resource " + name, e);
-    } finally {
-      if (resourceOS != null) {
-        try {
-          resourceOS.close();
-        } catch (IOException e) {
-          throw new JillException("Error closing output resource " + name, e);
-        }
-      }
-    }
-  }
-
-  private void copyResource(InputStream is, OutputStream os) throws IOException {
-    jackLibraryProperties.put(KEY_RSC, String.valueOf(true));
-    OutputStream resourceOS = null;
-    byte[] buffer = new byte[4096];
-    int bytesRead;
-    while ((bytesRead = is.read(buffer)) >= 0) {
-      os.write(buffer, 0, bytesRead);
-    }
-    os.flush();
   }
 
   private void transformToZip(@Nonnull InputStream is, @Nonnull ZipOutputStream zipOutputStream,
