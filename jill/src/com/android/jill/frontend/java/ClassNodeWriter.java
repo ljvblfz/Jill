@@ -16,6 +16,7 @@
 
 package com.android.jill.frontend.java;
 
+import com.android.jill.Options;
 import com.android.jill.backend.jayce.JayceWriter;
 import com.android.jill.backend.jayce.Token;
 
@@ -45,10 +46,15 @@ public class ClassNodeWriter extends JillWriter {
 
   private static final int ORDINAL_UNKNOWN = -1;
 
+  @Nonnull
+  private final Options options;
+
   public ClassNodeWriter(@Nonnull JayceWriter writer,
-      @Nonnull SourceInfoWriter sourceInfoWriter) {
+      @Nonnull SourceInfoWriter sourceInfoWriter,
+      @Nonnull Options options) {
     super(writer, sourceInfoWriter);
     annotWriter = new AnnotationWriter(writer, sourceInfoWriter);
+    this.options = options;
   }
 
   public void write(@Nonnull ClassNode cn) throws IOException {
@@ -282,7 +288,7 @@ public class ClassNodeWriter extends JillWriter {
     writer.writeOpenNodeList();
 
     for (MethodNode mn : cn.methods) {
-      new MethodBodyWriter(writer, annotWriter, cn, mn, sourceInfoWriter).write();
+      new MethodBodyWriter(writer, annotWriter, cn, mn, sourceInfoWriter, options).write();
     }
     writer.writeCloseNodeList();
   }
@@ -291,7 +297,7 @@ public class ClassNodeWriter extends JillWriter {
     writer.writeOpenNodeList();
 
     for (MethodNode mn : cn.methods) {
-      new MethodBodyWriter(writer, annotWriter, cn, mn, sourceInfoWriter).write();
+      new MethodBodyWriter(writer, annotWriter, cn, mn, sourceInfoWriter, options).write();
     }
     writer.writeCloseNodeList();
   }

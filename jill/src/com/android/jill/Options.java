@@ -56,7 +56,7 @@ public class Options {
   protected ContainerType container = ContainerType.ZIP;
 
   @Option(name = "--no-debug", usage = "disable debug info emission")
-  protected boolean emitDebugInfo = true;
+  protected boolean disableEmitDebugInfo = false;
 
   public void checkValidity() throws IllegalOptionsException {
     if (askForVersion() || askForHelp()) {
@@ -110,7 +110,7 @@ public class Options {
   }
 
   public boolean isEmitDebugInfo() {
-    return emitDebugInfo;
+    return !disableEmitDebugInfo;
   }
 
   @Nonnull

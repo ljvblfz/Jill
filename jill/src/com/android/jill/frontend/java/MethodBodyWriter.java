@@ -17,6 +17,7 @@
 package com.android.jill.frontend.java;
 
 import com.android.jill.JillException;
+import com.android.jill.Options;
 import com.android.jill.backend.jayce.JayceWriter;
 import com.android.jill.backend.jayce.Token;
 import com.android.jill.frontend.java.analyzer.JillAnalyzer;
@@ -177,15 +178,20 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private int endLine = -1;
 
   @Nonnull
+  private final Options options;
+
+  @Nonnull
   private final Map<TryCatchBlockNode, Variable> catchBlockToCatchedVariable =
     new HashMap<TryCatchBlockNode, Variable>();
 
   public MethodBodyWriter(@Nonnull JayceWriter writer,
       @Nonnull AnnotationWriter annotWriter,
       @Nonnull ClassNode cn, @Nonnull MethodNode mn,
-      @Nonnull SourceInfoWriter sourceInfoWriter) {
+      @Nonnull SourceInfoWriter sourceInfoWriter,
+      @Nonnull Options options) {
     super(writer, sourceInfoWriter);
     this.annotWriter = annotWriter;
+    this.options = options;
     currentClass = cn;
     currentMethod = getMethodWithoutJSR(mn);
 
@@ -2285,7 +2291,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   @CheckForNull
   private LocalVariableNode getLocalVariableNode(@Nonnegative int localIdx) {
     assert localIdx >= 0;
-    if (currentMethod.localVariables != null) {
+    if (options.isEmitDebugInfo() && currentMethod.localVariables != null) {
       for (LocalVariableNode lvn : currentMethod.localVariables) {
         int startScope = currentMethod.instructions.indexOf(lvn.start) - 1;
         int endScope = currentMethod.instructions.indexOf(lvn.end);

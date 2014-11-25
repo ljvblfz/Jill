@@ -352,7 +352,7 @@ public class JavaTransformer {
     JayceWriter writer = createWriter(os);
 
     ClassNodeWriter asm2jayce =
-        new ClassNodeWriter(writer, new SourceInfoWriter(writer));
+        new ClassNodeWriter(writer, new SourceInfoWriter(writer), options);
 
     asm2jayce.write(cn);
 
