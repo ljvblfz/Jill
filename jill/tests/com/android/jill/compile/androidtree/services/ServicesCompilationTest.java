@@ -27,11 +27,6 @@ import java.io.File;
 
 public class ServicesCompilationTest {
 
-  private static final File[] BOOTCLASSPATH = new File[] {
-    JillTestTools.getFromAndroidTree(
-        "out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar")
-  };
-
   private static final File[] CLASSPATH = new File[] {
       JillTestTools.getFromAndroidTree(
           "out/target/common/obj/JAVA_LIBRARIES/android.policy_intermediates/classes.jar"),
@@ -52,7 +47,7 @@ public class ServicesCompilationTest {
   @Test
   @Category(SlowTests.class)
   public void compareServicesStructureWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH,
+    JillTestTools.checkStructureWithJill(
         CLASSPATH,
         SOURCELIST,
         false /* withDebugInfo */);

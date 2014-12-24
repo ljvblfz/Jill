@@ -22,11 +22,8 @@ import com.android.jack.Main;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-
 public class InnerTest {
 
-  private static final File[] BOOTCLASSPATH = JillTestTools.getDefaultBootclasspath();
 
   @BeforeClass
   public static void setUpClass() {
@@ -36,13 +33,13 @@ public class InnerTest {
   @Test
   public void testCheckStructure20WithJill() throws Exception {
     //TODO: find out why debug info check fails
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH, null,
+    JillTestTools.checkStructureWithJill(null,
         JillTestTools.getJackTestsWithJackFolder("inner/test020"), false /*withDebugInfo*/);
   }
 
   @Test
   public void testCheckStructure21WithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH, null,
+    JillTestTools.checkStructureWithJill(null,
         JillTestTools.getJackTestsWithJackFolder("inner/test021"), false /*withDebugInfo*/);
   }
 }

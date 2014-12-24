@@ -28,7 +28,6 @@ import java.io.File;
  */
 public class AnnotationTest {
 
-  private static final File[] BOOTCLASSPATH = JillTestTools.getDefaultBootclasspath();
   private static final File ANNOTATION001_PATH =
       JillTestTools.getJackTestsWithJackFolder("annotation/test001");
 
@@ -39,7 +38,7 @@ public class AnnotationTest {
 
   @Test
   public void test001_3WithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH, null,
+    JillTestTools.checkStructureWithJill(null,
         new File(ANNOTATION001_PATH, "Annotation2.java"), false /*withDebugInfo*/);
   }
 

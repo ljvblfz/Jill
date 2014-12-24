@@ -28,11 +28,6 @@ import java.io.File;
 
 public class BouncycastleCompilationTest {
 
-  private static final File[] BOOTCLASSPATH = new File[] {
-    JillTestTools.getFromAndroidTree(
-        "out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar")
-  };
-
   private static final File SOURCELIST = JillTestTools.getTargetLibSourcelist("bouncycastle");
 
   private static final JarJarRules JARJAR_RULES = new JarJarRules(
@@ -42,7 +37,6 @@ public class BouncycastleCompilationTest {
   @Category(SlowTests.class)
   public void compareBouncycastleStructureWithJill() throws Exception {
     JillTestTools.checkStructureWithJill(
-        BOOTCLASSPATH,
         null,
         SOURCELIST,
         false /* compareDebugInfoBinary */,

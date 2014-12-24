@@ -37,6 +37,6 @@ public class CoreCompilationTest {
   @Test
   @Category(SlowTests.class)
   public void compareLibCoreStructureWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(null, null, SOURCELIST, false /*withDebugInfo*/);
+    JillTestTools.checkStructureWithJill(null, SOURCELIST, false /*withDebugInfo*/);
   }
 }

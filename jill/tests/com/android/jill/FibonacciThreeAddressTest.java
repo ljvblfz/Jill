@@ -28,8 +28,6 @@ import java.io.File;
  */
 public class FibonacciThreeAddressTest {
 
-  private static final File[] BOOTCLASSPATH = JillTestTools.getDefaultBootclasspath();
-
   private static final String CLASS_BINARY_NAME = "com/android/jack/fibonacci/jack/FibonacciThreeAddress";
   private static final File JAVA_FILEPATH = JillTestTools.getJackTestFromBinaryName(CLASS_BINARY_NAME);
 
@@ -41,7 +39,7 @@ public class FibonacciThreeAddressTest {
 
   @Test
   public void testCompareFiboDexFileWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH, null, JAVA_FILEPATH, false /*withDebugInfo*/);
+    JillTestTools.checkStructureWithJill(null, JAVA_FILEPATH, false /*withDebugInfo*/);
   }
 
 }

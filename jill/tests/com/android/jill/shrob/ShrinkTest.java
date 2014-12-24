@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 public class ShrinkTest {
 
   @Nonnull
-  private static final File[] defaultBootclasspath = JillTestTools.getDefaultBootclasspath();
+  private static final File[] defaultBootclasspath = JillTestTools.getDefaultClasspath();
 
   private static ProguardFlags dontObfuscateFlagFile =
       new ProguardFlags(JillTestTools.getJackTestFolder("shrob"), "dontobfuscate.flags");

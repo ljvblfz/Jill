@@ -65,11 +65,11 @@ public class JillTestTools extends TestTools {
     new Jill(options, "").process(options.getBinaryFile());
   }
 
-  public static void checkStructureWithJill(@CheckForNull File[] refBootclasspath,
+  public static void checkStructureWithJill(
       @CheckForNull File[] refClasspath,
       @Nonnull File fileOrSourceList,
       boolean withDebugInfo) throws Exception {
-    checkStructureWithJill(refBootclasspath,
+    checkStructureWithJill(
         refClasspath,
         fileOrSourceList,
         withDebugInfo,
@@ -77,7 +77,7 @@ public class JillTestTools extends TestTools {
         null);
   }
 
-  public static void checkStructureWithJill(@CheckForNull File[] bootclasspath,
+  public static void checkStructureWithJill(
       @CheckForNull File[] classpath,
       @Nonnull File fileOrSourceList,
       boolean withDebugInfo,
@@ -85,7 +85,7 @@ public class JillTestTools extends TestTools {
       @CheckForNull ProguardFlags[] proguardFlags) throws Exception {
 
     com.android.jack.Options options =
-        buildCommandLineArgs(bootclasspath, classpath, fileOrSourceList);
+        buildCommandLineArgs(classpath, fileOrSourceList);
 
     boolean useEcjAsRefCompiler = withDebugInfo;
 

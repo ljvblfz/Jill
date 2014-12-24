@@ -33,13 +33,13 @@ public class FieldTest {
 
   @Test
   public void testStaticWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(null, null,
+    JillTestTools.checkStructureWithJill(null,
         JillTestTools.getJackTestsWithJackFolder("field/static003"), false /*withDebugInfo*/);
   }
 
   @Test
   public void testInstanceWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(null, null,
+    JillTestTools.checkStructureWithJill(null,
         JillTestTools.getJackTestsWithJackFolder("field/instance005"), false /*withDebugInfo*/);
   }
 }

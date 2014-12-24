@@ -35,7 +35,7 @@ public class JarjarTest {
 
   @Test
   public void testCheckStructure003() throws Exception {
-    JillTestTools.checkStructureWithJill(null,
+    JillTestTools.checkStructureWithJill(
         null,
         JillTestTools.getJackTestsWithJackFolder("jarjar/test003"),
         false,

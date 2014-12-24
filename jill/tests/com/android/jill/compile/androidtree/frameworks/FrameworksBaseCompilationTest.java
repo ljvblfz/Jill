@@ -27,11 +27,6 @@ import java.io.File;
 
 public class FrameworksBaseCompilationTest {
 
-  private static final File[] BOOTCLASSPATH = new File[] {
-    JillTestTools.getFromAndroidTree(
-        "out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar")
-  };
-
   private final static File[] CLASSPATH = new File[] {
     JillTestTools.getFromAndroidTree(
           "out/target/common/obj/JAVA_LIBRARIES/bouncycastle_intermediates/classes.jar"),
@@ -50,7 +45,7 @@ public class FrameworksBaseCompilationTest {
   @Test
   @Category(SlowTests.class)
   public void compareFrameworksStructureWithJill() throws Exception {
-    JillTestTools.checkStructureWithJill(BOOTCLASSPATH, CLASSPATH, SOURCELIST,
+    JillTestTools.checkStructureWithJill(CLASSPATH, SOURCELIST,
         false /*withDebugInfo*/);
   }
 }
