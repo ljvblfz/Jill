@@ -144,8 +144,13 @@ public class Main {
             version += " \'" + codeName + '\'';
           }
 
-          String codeBase = prop.getProperty("jill.version.codebase", "engineering");
-          version += " (" + codeBase + ")";
+          String bid = prop.getProperty("jill.version.buildid", "engineering");
+          String sha = prop.getProperty("jill.version.sha");
+          if (sha != null) {
+            version += " (" + bid + ' ' + sha + ')';
+          } else {
+            version += " (" + bid + ')';
+          }
         }
       } catch (IOException e) {
         // Return default version
