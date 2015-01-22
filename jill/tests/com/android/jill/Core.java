@@ -16,6 +16,8 @@
 
 package com.android.jill;
 
+import com.android.jack.test.TestsProperties;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,7 +34,7 @@ public class Core {
   @Test
   public void coreToJayceFromJar() throws Exception {
     Options options = new Options();
-    options.setBinaryFile(new File(JillTestTools.getAndroidTop()
+    options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
         + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;
@@ -43,7 +45,7 @@ public class Core {
   @Test
   public void coreToJayceFromFolder() throws Exception {
     Options options = new Options();
-    options.setBinaryFile(new File(JillTestTools.getAndroidTop()
+    options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
         + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes/"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;

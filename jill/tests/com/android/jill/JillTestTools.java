@@ -21,6 +21,7 @@ import com.android.jack.JarJarRules;
 import com.android.jack.ProguardFlags;
 import com.android.jack.TestTools;
 import com.android.jack.backend.dex.DexFileWriter;
+import com.android.jack.test.TestsProperties;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,17 +34,20 @@ import javax.annotation.Nonnull;
 public class JillTestTools extends TestTools {
 
   @Nonnull
-  private static final String JILL_UNIT_TESTS_PATH = "toolchain/jill/jill/tests/";
+  private static final String JILL_UNIT_TESTS_PATH = "jill/tests/";
 
   @Nonnull
   private static final String JILL_PACKAGE = "com/android/jill/";
 
   @Nonnull
-  private static final File JILL = getFromAndroidTree("out/host/linux-x86/framework/jill.jar");
+  private static final File JILL_DIR = new File(TestsProperties.getJackRootDir(), "../jill");
+
+  @Nonnull
+  private static final File JILL = new File(JILL_DIR, "dist/jill.jar");
 
   @Nonnull
   public static File getJillTestFolder(@Nonnull String testName) {
-    return getFromAndroidTree(JILL_UNIT_TESTS_PATH + JILL_PACKAGE + testName);
+    return new File(JILL_DIR, JILL_UNIT_TESTS_PATH + JILL_PACKAGE + testName);
   }
 
   public static void runJill(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
@@ -59,8 +63,7 @@ public class JillTestTools extends TestTools {
   public static void runJillToZip(@Nonnull File inputFile, @Nonnull File outputFile) throws Exception {
     String[] args = new String[] {"--output",
         outputFile.getAbsolutePath(),
-        inputFile.getAbsolutePath(),
-        "-v"};
+        inputFile.getAbsolutePath()};
     Options options = Main.getOptions(args);
     new Jill(options, "").process(options.getBinaryFile());
   }
