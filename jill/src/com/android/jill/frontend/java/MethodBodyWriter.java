@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,10 +78,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private final Map<String, Variable> nameToVar = new HashMap<String, Variable>();
 
   @Nonnull
-  private final List<Variable> parameter = new ArrayList<Variable>();
-
-  @Nonnull
-  private final List<Variable> parameter2Var = new ArrayList<Variable>();
+  private final Map<Variable, Variable> parameter2Var = new LinkedHashMap<Variable, Variable>();
 
   public static final int CONSTRUCTOR  = 0x10000;
 
@@ -404,11 +403,8 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeOpen();
     writer.writeOpenNodeList();
 
-    Iterator<Variable> paramIt = parameter.iterator();
-    Iterator<Variable> param2VarIt = parameter2Var.iterator();
-
-    while (paramIt.hasNext()) {
-      Variable p = paramIt.next();
+    for (Map.Entry<Variable, Variable> entry : parameter2Var.entrySet()) {
+      Variable p = entry.getKey();
       sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
       writer.writeCatchBlockIds(currentCatchList);
       writer.writeKeyword(Token.EXPRESSION_STATEMENT);
@@ -416,7 +412,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
       sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
       writer.writeKeyword(Token.ASG_OPERATION);
       writer.writeOpen();
-      writeLocalRef(param2VarIt.next());
+      writeLocalRef(entry.getValue());
       if (p.getType() == Type.BOOLEAN_TYPE) {
         writeCastOperation(Token.REINTERPRETCAST_OPERATION, p, Type.INT_TYPE.getDescriptor());
       } else {
@@ -2176,7 +2172,8 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
 
   @Nonnull
   private Iterator<Variable> collectLocals() {
-    List<Variable> locals = new ArrayList<Variable>();
+    Set<Variable> locals = new LinkedHashSet<Variable>();
+
     Frame<BasicValue>[] frames = analyzer.getFrames();
     for (int frameIdx = 0; frameIdx < frames.length; frameIdx++) {
       currentPc = frameIdx;
@@ -2238,8 +2235,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         String lid = getUnnamedLocalId(parameterIdx, untypedParameter);
         Variable local = getVariable(lid, lid, untypedParameter, null);
 
-        parameter.add(p);
-        parameter2Var.add(local);
+        parameter2Var.put(p, local);
       } else {
         assert parameterType.getDescriptor().equals(lvn.desc);
         Variable p = getVariable(getNamedLocalId(lvn), lvn.name, parameterType, lvn.signature);
@@ -2260,8 +2256,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         String lid = getUnnamedLocalId(parameterIdx, untypedParameter);
         Variable local = getVariable(lid, lid, untypedParameter, null);
 
-        parameter.add(p);
-        parameter2Var.add(local);
+        parameter2Var.put(p, local);
       } else {
         assert paramType.getDescriptor().equals(lvn.desc);
         Variable p = getVariable(getNamedLocalId(lvn), lvn.name, paramType, lvn.signature);
