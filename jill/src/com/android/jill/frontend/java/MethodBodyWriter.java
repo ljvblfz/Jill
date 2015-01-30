@@ -76,7 +76,10 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private final Map<String, Variable> nameToVar = new HashMap<String, Variable>();
 
   @Nonnull
-  private final Map<Variable, Variable> parameterToVar = new HashMap<Variable, Variable>();
+  private final List<Variable> parameter = new ArrayList<Variable>();
+
+  @Nonnull
+  private final List<Variable> parameter2Var = new ArrayList<Variable>();
 
   public static final int CONSTRUCTOR  = 0x10000;
 
@@ -401,7 +404,11 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeOpen();
     writer.writeOpenNodeList();
 
-    for (Variable p : parameterToVar.keySet()) {
+    Iterator<Variable> paramIt = parameter.iterator();
+    Iterator<Variable> param2VarIt = parameter2Var.iterator();
+
+    while (paramIt.hasNext()) {
+      Variable p = paramIt.next();
       sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
       writer.writeCatchBlockIds(currentCatchList);
       writer.writeKeyword(Token.EXPRESSION_STATEMENT);
@@ -409,7 +416,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
       sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
       writer.writeKeyword(Token.ASG_OPERATION);
       writer.writeOpen();
-      writeLocalRef(parameterToVar.get(p));
+      writeLocalRef(param2VarIt.next());
       if (p.getType() == Type.BOOLEAN_TYPE) {
         writeCastOperation(Token.REINTERPRETCAST_OPERATION, p, Type.INT_TYPE.getDescriptor());
       } else {
@@ -2169,7 +2176,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
 
   @Nonnull
   private Iterator<Variable> collectLocals() {
-    Set<Variable> locals = new HashSet<Variable>();
+    List<Variable> locals = new ArrayList<Variable>();
     Frame<BasicValue>[] frames = analyzer.getFrames();
     for (int frameIdx = 0; frameIdx < frames.length; frameIdx++) {
       currentPc = frameIdx;
@@ -2231,7 +2238,8 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         String lid = getUnnamedLocalId(parameterIdx, untypedParameter);
         Variable local = getVariable(lid, lid, untypedParameter, null);
 
-        parameterToVar.put(p, local);
+        parameter.add(p);
+        parameter2Var.add(local);
       } else {
         assert parameterType.getDescriptor().equals(lvn.desc);
         Variable p = getVariable(getNamedLocalId(lvn), lvn.name, parameterType, lvn.signature);
@@ -2252,7 +2260,8 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         String lid = getUnnamedLocalId(parameterIdx, untypedParameter);
         Variable local = getVariable(lid, lid, untypedParameter, null);
 
-        parameterToVar.put(p, local);
+        parameter.add(p);
+        parameter2Var.add(local);
       } else {
         assert paramType.getDescriptor().equals(lvn.desc);
         Variable p = getVariable(getNamedLocalId(lvn), lvn.name, paramType, lvn.signature);
