@@ -17,12 +17,6 @@
 package com.android.jill;
 
 
-import com.android.jill.compile.androidtree.bouncycastle.BouncycastleCompilationTest;
-import com.android.jill.compile.androidtree.core.CoreCompilationTest;
-import com.android.jill.compile.androidtree.frameworks.FrameworksBaseCompilationTest;
-import com.android.jill.compile.androidtree.services.ServicesCompilationTest;
-import com.android.jill.shrob.ShrinkTest;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -32,16 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses(value = {
-    AnnotationTest.class,
-    FibonacciThreeAddressTest.class,
-    FieldTest.class,
-    InnerTest.class,
-    JarjarTest.class,
-    NoClasspathTest.class,
-    BouncycastleCompilationTest.class,
-    CoreCompilationTest.class,
-    FrameworksBaseCompilationTest.class,
-    ServicesCompilationTest.class,
-    ShrinkTest.class})
+    Core.class})
 public class AllTests {
 }

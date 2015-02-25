@@ -126,6 +126,7 @@
         <filelist dir="/">
           <file name="${jill.dist.dir}/${jill.execname}" />
           <file name="${jackunittests.dist.dir}/${jackunittests.execname}" />
+        	<file name="${jack-tests.dist.dir}/${jack-tests.execname}" />
         </filelist>
       </classpath>
     </javac>
@@ -134,9 +135,9 @@
         <fileset dir="${jill.build.outdir}">
           <include name="**/*" />
         </fileset>
-        <filelist dir="/">
-        <file name="${jackunittests.dist.dir}/${jackunittests.execname}" />
-      </filelist>
+        <fileset dir="${jackunittests.build.outdir}">
+          <include name="**/*" />
+        </fileset>
     </copy>
     <jar destfile="${jill.dist.dir}/${jillunittests.execname}"
             basedir="${jillunittests.build.outdir}"
@@ -170,6 +171,87 @@
     <jar destfile="${asm4.dist.dir}/${asm4.libname}"
           basedir="${asm4.build.outdir}"
           includes="**"/>
+  </target>
+
+  <!-- ******************* -->
+  <!-- tests               -->
+  <!-- ******************* -->
+
+  <property name="jill.tests.output" value="${jill-project.dir}/tests-results"/>
+
+  <filelist id="jill.junit.tests.classpath" dir="/">
+    <file name="${jack-tests.dist.dir}/${jack-tests.execname}" />
+    <file name="${jill.dist.dir}/${jillunittests.execname}" />
+  </filelist>
+
+  <target name="test-jill-clean" >
+    <delete dir="${jill.tests.output}"/>
+  </target>
+
+  <target name="test-jill" depends="tests-check-config, jillunittests">
+    <mkdir dir="${jill.tests.output}/test-jill/html"/>
+    <junit fork="yes" failureproperty="test-jill.failure">
+      <formatter type="xml"/>
+      <jvmarg value="-Dtests.config=${tests.config}"/>
+      <jvmarg value="-ea"/>
+       <classpath>
+        <filelist refid="jill.junit.tests.classpath" />
+       </classpath>
+      <test name="com.android.jill.PreSubmitTests"
+        todir="${jill.tests.output}/test-jill/"
+        outfile="test-jill" />
+    </junit>
+    <junitreport todir="${jill.tests.output}/test-jill">
+      <fileset dir="${jill.tests.output}/test-jill">
+        <include name="test-jill.xml"/>
+      </fileset>
+      <report format="frames" todir="${jill.tests.output}/test-jill/html"/>
+    </junitreport>
+    <fail message="TESTS FAILED" if="test-jill.failure" />
+  </target>
+
+  <target name="test-jill-long" depends="tests-check-config, jillunittests">
+    <mkdir dir="${jill.tests.output}/test-jill-long/html"/>
+    <junit fork="yes" failureproperty="test-jill.failure">
+      <formatter type="xml"/>
+      <jvmarg value="-Dtests.config=${tests.config}"/>
+      <jvmarg value="-ea"/>
+       <classpath>
+        <filelist refid="jill.junit.tests.classpath" />
+       </classpath>
+      <test name="com.android.jill.LongLastingTests"
+        todir="${jill.tests.output}/test-jill-long/"
+        outfile="test-jill-long" />
+    </junit>
+    <junitreport todir="${jill.tests.output}/test-jill-long">
+      <fileset dir="${jill.tests.output}/test-jill-long">
+        <include name="test-jill-long.xml"/>
+      </fileset>
+      <report format="frames" todir="${jill.tests.output}/test-jill-long/html"/>
+    </junitreport>
+    <fail message="TESTS FAILED" if="test-jill.failure" />
+  </target>
+
+  <target name="test-jill-all" depends="tests-check-config, jillunittests">
+    <mkdir dir="${jill.tests.output}/test-jill-all/html"/>
+    <junit fork="yes" failureproperty="test-jill.failure">
+      <formatter type="xml"/>
+      <jvmarg value="-Dtests.config=${tests.config}"/>
+      <jvmarg value="-ea"/>
+       <classpath>
+        <filelist refid="jill.junit.tests.classpath" />
+       </classpath>
+      <test name="com.android.jill.AllTests"
+        todir="${jill.tests.output}/test-jill-all/"
+        outfile="test-jill-all" />
+    </junit>
+    <junitreport todir="${jill.tests.output}/test-jill-all">
+      <fileset dir="${jill.tests.output}/test-jill-all">
+        <include name="test-jill-all.xml"/>
+      </fileset>
+      <report format="frames" todir="${jill.tests.output}/test-jill-all/html"/>
+    </junitreport>
+    <fail message="TESTS FAILED" if="test-jill.failure" />
   </target>
 
 </project>

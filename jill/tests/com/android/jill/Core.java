@@ -17,13 +17,15 @@
 package com.android.jill;
 
 import com.android.jack.test.TestsProperties;
+import com.android.jack.test.toolchain.AbstractTestTools;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 
-
+@Ignore("Tree")
 public class Core {
 
   @BeforeClass
@@ -35,10 +37,10 @@ public class Core {
   public void coreToJayceFromJar() throws Exception {
     Options options = new Options();
     options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
-        + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes.jar"));
+        + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes.jar"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;
-    options.outputDirOrZip = JillTestTools.createTempDir("core_", "_dir");
+    options.outputDirOrZip = AbstractTestTools.createTempDir();
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 
@@ -46,10 +48,10 @@ public class Core {
   public void coreToJayceFromFolder() throws Exception {
     Options options = new Options();
     options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
-        + "/out/target/common/obj/JAVA_LIBRARIES/core_intermediates/classes/"));
+        + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes/"));
     options.setVerbose(true);
     options.container = ContainerType.DIR;
-    options.outputDirOrZip = JillTestTools.createTempDir("core_", "_dir");
+    options.outputDirOrZip = AbstractTestTools.createTempDir();
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 }
