@@ -113,8 +113,8 @@ public class JavaTransformer {
   public void transform(@Nonnull List<File> javaBinaryFiles) {
     ZipOutputStream zos = null;
     try {
-      if (options.getContainer() == ContainerType.ZIP) {
-        zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
+      if (options.getOutputContainer() == ContainerType.ZIP) {
+        zos = new ZipOutputStream(new FileOutputStream(options.getOutput()));
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
@@ -129,7 +129,7 @@ public class JavaTransformer {
         for (File fileToTransform : javaBinaryFiles) {
           FileInputStream fis = new FileInputStream(fileToTransform);
           try {
-            transformToDir(fis, options.getOutputDir());
+            transformToDir(fis, options.getOutput());
           } catch (DuplicateJackFileException e) {
             System.err.println(e.getMessage());
           } finally {
@@ -154,8 +154,8 @@ public class JavaTransformer {
   public void transform(@Nonnull JarFile jarFile) {
     ZipOutputStream zos = null;
     try {
-      if (options.getContainer() == ContainerType.ZIP) {
-        zos = new ZipOutputStream(new FileOutputStream(options.getOutputDir()));
+      if (options.getOutputContainer() == ContainerType.ZIP) {
+        zos = new ZipOutputStream(new FileOutputStream(options.getOutput()));
       }
       transformJavaFiles(jarFile, zos);
       dumpJackLibraryProperties(zos);
@@ -176,7 +176,7 @@ public class JavaTransformer {
     if (zos != null) {
       dumpPropertiesToZip(zos, jackLibraryProperties);
     } else {
-      dumpPropertiesToFile(new File(options.getOutputDir(), JACK_LIBRARY_PROPERTIES),
+      dumpPropertiesToFile(new File(options.getOutput(), JACK_LIBRARY_PROPERTIES),
           jackLibraryProperties);
     }
   }
@@ -194,7 +194,7 @@ public class JavaTransformer {
 
   private void dumpPropertiesToFile(@Nonnull File outputFile,
       @Nonnull Properties libraryProperties) {
-    File outputDir = options.getOutputDir();
+    File outputDir = options.getOutput();
     File libraryPropertiesFile = new File(outputDir, JACK_LIBRARY_PROPERTIES);
     FileOutputStream fos = null;
     try {
@@ -226,11 +226,11 @@ public class JavaTransformer {
           InputStream is = jarFile.getInputStream(fileEntry);
           try {
             if (zos != null) {
-              assert options.getContainer() == ContainerType.ZIP;
+              assert options.getOutputContainer() == ContainerType.ZIP;
               transformToZip(is, zos, jarFile);
             } else {
-              assert options.getContainer() == ContainerType.DIR;
-              transformToDir(is, options.getOutputDir());
+              assert options.getOutputContainer() == ContainerType.DIR;
+              transformToDir(is, options.getOutput());
             }
           } catch (DuplicateJackFileException e) {
             System.err.println(e.getMessage());
@@ -246,7 +246,7 @@ public class JavaTransformer {
     String filePath = getFilePath(cn.name);
     if (jarFile != null && jarFile.getEntry(filePath) != null) {
       throw new DuplicateJackFileException("Jack file '" + filePath
-          + "' was already copied as a resource to archive '" + options.getOutputDir()
+          + "' was already copied as a resource to archive '" + options.getOutput()
           + "' and thus won't be retransformed from class file.");
     }
     try {

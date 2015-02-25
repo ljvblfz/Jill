@@ -48,12 +48,12 @@ public class Options {
 
   @CheckForNull
   @Option(name = "--output", usage = "output file", metaVar = "FILE")
-  protected File outputDirOrZip;
+  protected File output;
 
   @Option(name = "--version", usage = "display version")
   protected boolean version;
 
-  protected ContainerType container = ContainerType.ZIP;
+  private final ContainerType outputContainer = ContainerType.ZIP;
 
   @Option(name = "--no-debug", usage = "disable debug info emission")
   protected boolean disableEmitDebugInfo = false;
@@ -68,8 +68,8 @@ public class Options {
     } else {
       throw new IllegalOptionsException("Input file not provided");
     }
-    if (outputDirOrZip != null) {
-      if (container == ContainerType.DIR) {
+    if (output != null) {
+      if (outputContainer == ContainerType.DIR) {
         checkOutputDir();
       }
     } else {
@@ -81,10 +81,14 @@ public class Options {
     this.binaryFile = binaryFile;
   }
 
+  public void setOutput(@Nonnull File output) {
+    this.output = output;
+  }
+
   @Nonnull
-  public File getOutputDir() {
-    assert outputDirOrZip != null;
-    return outputDirOrZip;
+  public File getOutput() {
+    assert output != null;
+    return output;
   }
 
   @Nonnull
@@ -113,9 +117,13 @@ public class Options {
     return !disableEmitDebugInfo;
   }
 
+  public void setEmitDebugInfo(boolean emitDebugInfo) {
+    disableEmitDebugInfo = !emitDebugInfo;
+  }
+
   @Nonnull
-  public ContainerType getContainer() {
-    return container;
+  public ContainerType getOutputContainer() {
+    return outputContainer;
   }
 
   private void checkBinaryFileValidity() throws IllegalOptionsException {
@@ -143,15 +151,15 @@ public class Options {
   }
 
   private void checkOutputDir() throws IllegalOptionsException {
-    assert outputDirOrZip != null;
+    assert output != null;
 
-    if (!outputDirOrZip.exists()) {
-      throw new IllegalOptionsException(outputDirOrZip.getName() + " does not exist.");
+    if (!output.exists()) {
+      throw new IllegalOptionsException(output.getName() + " does not exist.");
     }
 
-    if (!outputDirOrZip.canRead() || !outputDirOrZip.canWrite()) {
+    if (!output.canRead() || !output.canWrite()) {
       throw new IllegalOptionsException("The specified output folder '"
-          + outputDirOrZip.getAbsolutePath()
+          + output.getAbsolutePath()
           + "' for jack files cannot be written to or read from.");
     }
   }
