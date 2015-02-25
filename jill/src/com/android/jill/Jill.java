@@ -21,8 +21,10 @@ import com.android.jill.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.JarFile;
 
 import javax.annotation.Nonnull;
@@ -33,50 +35,64 @@ import javax.annotation.Nonnull;
 public class Jill {
 
   @Nonnull
-  private final Options options;
+  private static final String PROPERTIES_FILE = "jill.properties";
 
-  @Nonnull
-  private final String version;
 
-  public Jill(@Nonnull Options options, @Nonnull String version) {
-    this.options = options;
-    this.version = version;
-  }
-
-  public void process(@Nonnull File binaryFile) {
+  public static void process(@Nonnull Options options) {
+    File binaryFile = options.getBinaryFile();
+    JavaTransformer jt = new JavaTransformer(getVersion(), options);
     if (binaryFile.isFile()) {
       if (FileUtils.isJavaBinaryFile(binaryFile)) {
-          processJavaBinary(binaryFile);
+        List<File> javaBinaryFiles = new ArrayList<File>();
+        javaBinaryFiles.add(binaryFile);
+        jt.transform(javaBinaryFiles);
       } else if (FileUtils.isJarFile(binaryFile)) {
-          try {
-            processJarFile(new JarFile(binaryFile));
-          } catch (IOException e) {
-            throw new JillException("Fails to create jar file " + binaryFile.getName(), e);
-          }
+        try {
+          jt.transform(new JarFile(binaryFile));
+        } catch (IOException e) {
+          throw new JillException("Fails to create jar file " + binaryFile.getName(), e);
+        }
       } else {
         throw new JillException("Unsupported file type: " + binaryFile.getName());
       }
     } else {
-      processFolder(binaryFile);
+      List<File> javaBinaryFiles = new ArrayList<File>();
+      FileUtils.getJavaBinaryFiles(binaryFile, javaBinaryFiles);
+      jt.transform(javaBinaryFiles);
     }
   }
 
-  private void processJavaBinary(@Nonnull File javaBinaryFile) {
-    assert javaBinaryFile.isFile();
-    List<File> javaBinaryFiles = new ArrayList<File>();
-    javaBinaryFiles.add(javaBinaryFile);
-    new JavaTransformer(version, options).transform(javaBinaryFiles);
-  }
+  @Nonnull
+  public static String getVersion() {
+    String version = "Unknown (problem with " + PROPERTIES_FILE + " resource file)";
 
-  private void processJarFile(@Nonnull JarFile jarFile) {
-    new JavaTransformer(version, options).transform(jarFile);
-  }
+    InputStream is = Main.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
+    if (is != null) {
+      Properties prop = new Properties();
+      try {
+        prop.load(is);
+        String rawVersion = prop.getProperty("jill.version");
+        if (rawVersion != null) {
+          version = rawVersion;
 
-  private void processFolder(@Nonnull File folder) {
-    assert folder.isDirectory();
-    List<File> javaBinaryFiles = new ArrayList<File>();
-    FileUtils.getJavaBinaryFiles(folder, javaBinaryFiles);
-    new JavaTransformer(version, options).transform(javaBinaryFiles);
-  }
+          String codeName = prop.getProperty("jill.version.codename");
+          if (codeName != null) {
+            version += " \'" + codeName + '\'';
+          }
 
+          String bid = prop.getProperty("jill.version.buildid", "engineering");
+          String sha = prop.getProperty("jill.version.sha");
+          if (sha != null) {
+            version += " (" + bid + ' ' + sha + ')';
+          } else {
+            version += " (" + bid + ')';
+          }
+        }
+      } catch (IOException e) {
+        // Return default version
+      }
+    }
+
+    return version;
+  }
 }
