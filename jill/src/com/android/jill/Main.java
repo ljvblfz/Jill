@@ -23,10 +23,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
@@ -48,11 +46,11 @@ public class Main {
 
       if (options.askForVersion()) {
         System.out.println("Jill");
-        System.out.println("Version: " + getVersion() + '.');
+        System.out.println("Version: " + Jill.getVersion() + '.');
         System.exit(ExitStatus.SUCCESS);
       }
 
-      run(options);
+      Jill.process(options);
 
       System.exit(ExitStatus.SUCCESS);
     } catch (CmdLineException e) {
@@ -112,51 +110,10 @@ public class Main {
     return options;
   }
 
-  public static void run(@Nonnull Options options) {
-    new Jill(options, Main.getVersion()).process(options.getBinaryFile());
-  }
-
   private static void printUsage(@Nonnull CmdLineParser parser) {
     System.err.print("Main: ");
     parser.printSingleLineUsage(System.err);
     System.err.println();
     parser.printUsage(System.err);
-  }
-
-  @Nonnull
-  private static final String PROPERTIES_FILE = "jill.properties";
-
-  @Nonnull
-  public static String getVersion() {
-    String version = "Unknown (problem with " + PROPERTIES_FILE + " resource file)";
-
-    InputStream is = Main.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
-    if (is != null) {
-      Properties prop = new Properties();
-      try {
-        prop.load(is);
-        String rawVersion = prop.getProperty("jill.version");
-        if (rawVersion != null) {
-          version = rawVersion;
-
-          String codeName = prop.getProperty("jill.version.codename");
-          if (codeName != null) {
-            version += " \'" + codeName + '\'';
-          }
-
-          String bid = prop.getProperty("jill.version.buildid", "engineering");
-          String sha = prop.getProperty("jill.version.sha");
-          if (sha != null) {
-            version += " (" + bid + ' ' + sha + ')';
-          } else {
-            version += " (" + bid + ')';
-          }
-        }
-      } catch (IOException e) {
-        // Return default version
-      }
-    }
-
-    return version;
   }
 }

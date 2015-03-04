@@ -40,7 +40,7 @@ public class Core {
         + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes.jar"));
     options.setVerbose(true);
     options.output = AbstractTestTools.createTempFile("jillTest", ".zip");
-    new Jill(options, "0.1").process(options.getBinaryFile());
+    Jill.process(options);
   }
 
   @Test
@@ -50,6 +50,6 @@ public class Core {
         + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes/"));
     options.setVerbose(true);
     options.output = AbstractTestTools.createTempFile("jillTest", ".zip");
-    new Jill(options, "0.1").process(options.getBinaryFile());
+    Jill.process(options);
   }
 }
