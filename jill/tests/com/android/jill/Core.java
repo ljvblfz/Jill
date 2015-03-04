@@ -39,8 +39,7 @@ public class Core {
     options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
         + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes.jar"));
     options.setVerbose(true);
-    options.container = ContainerType.DIR;
-    options.outputDirOrZip = AbstractTestTools.createTempDir();
+    options.output = AbstractTestTools.createTempFile("jillTest", ".zip");
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 
@@ -50,8 +49,7 @@ public class Core {
     options.setBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
         + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes/"));
     options.setVerbose(true);
-    options.container = ContainerType.DIR;
-    options.outputDirOrZip = AbstractTestTools.createTempDir();
+    options.output = AbstractTestTools.createTempFile("jillTest", ".zip");
     new Jill(options, "0.1").process(options.getBinaryFile());
   }
 }
