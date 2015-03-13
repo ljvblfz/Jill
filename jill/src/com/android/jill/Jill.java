@@ -24,9 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.jar.JarFile;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -36,11 +36,12 @@ public class Jill {
 
   @Nonnull
   private static final String PROPERTIES_FILE = "jill.properties";
-
+  @CheckForNull
+  private static Version version = null;
 
   public static void process(@Nonnull Options options) {
     File binaryFile = options.getBinaryFile();
-    JavaTransformer jt = new JavaTransformer(getVersion(), options);
+    JavaTransformer jt = new JavaTransformer(getVersion().getVersion(), options);
     if (binaryFile.isFile()) {
       if (FileUtils.isJavaBinaryFile(binaryFile)) {
         List<File> javaBinaryFiles = new ArrayList<File>();
@@ -63,36 +64,19 @@ public class Jill {
   }
 
   @Nonnull
-  public static String getVersion() {
-    String version = "Unknown (problem with " + PROPERTIES_FILE + " resource file)";
-
-    InputStream is = Main.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
-    if (is != null) {
-      Properties prop = new Properties();
-      try {
-        prop.load(is);
-        String rawVersion = prop.getProperty("jill.version");
-        if (rawVersion != null) {
-          version = rawVersion;
-
-          String codeName = prop.getProperty("jill.version.codename");
-          if (codeName != null) {
-            version += " \'" + codeName + '\'';
-          }
-
-          String bid = prop.getProperty("jill.version.buildid", "engineering");
-          String sha = prop.getProperty("jill.version.sha");
-          if (sha != null) {
-            version += " (" + bid + ' ' + sha + ')';
-          } else {
-            version += " (" + bid + ')';
-          }
-        }
-      } catch (IOException e) {
-        // Return default version
+  public static Version getVersion() {
+    if (version == null) {
+      InputStream is = Jill.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
+      if (is != null) {
+        version = new Version(is);
+      } else {
+        System.err.println("Failed to open Jack properties file " + PROPERTIES_FILE);
+        throw new AssertionError();
       }
     }
 
+    assert version != null;
     return version;
   }
+
 }

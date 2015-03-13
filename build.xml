@@ -19,14 +19,15 @@
 
   <import file="../jack/build.xml"/>
 
-  <target name="dist" depends="jill, jillunittests"/>
+  <target name="dist" depends="jill, jill-api, jillunittests"/>
 
-  <target name="clean" depends="jill-clean, jillunittests-clean,
+  <target name="clean" depends="jill-clean, jill-api-lib-clean, jillunittests-clean,
     asm4-clean" />
 
   <dirname property="jill-project.dir" file="${ant.file.jill}"/>
 
   <property name="jill.dir" value="${jill-project.dir}/jill" />
+  <property name="jill-api.dir" value="${jill-project.dir}/jill-api" />
   <property name="asm4.dir" value="${jill-project.dir}/asm4" />
 
 
@@ -45,10 +46,11 @@
     <delete dir="${jill.libs.dir}" />
   </target>
 
-  <target name="jill-copy-libs" depends="sched-lib,guava-lib,asm4-lib,args4j-lib,jsr305-lib,
+  <target name="jill-copy-libs" depends="jill-api-lib,sched-lib,guava-lib,asm4-lib,args4j-lib,jsr305-lib,
     dexcomparator-lib">
     <copy todir="${jill.libs.dir}" flatten="true">
       <filelist id="jill.libs.filelist" dir="/" >
+        <file name="${jill-api.dist.dir}/${jill-api.lib.name}"/>
         <file name="${schedlib.dist.dir}/${schedlib.libname}"/>
         <file name="${guava.dist.dir}/${guava.libname}"/>
         <file name="${args4j.dist.dir}/${args4j.libname}"/>
@@ -103,6 +105,71 @@
 
 
   <!-- ******************* -->
+  <!-- jill-api-lib        -->
+  <!-- ******************* -->
+  <property name="jill-api.lib.build.dir" value="${jill-api.dir}/build/lib" />
+  <property name="jill-api.lib.build.outdir" value="${jill-api.lib.build.dir}/classes" />
+  <property name="jill-api.libs.dir" value="${jill-api.dir}/libs" />
+  <property name="jill-api.dist.dir" value="${jill-api.dir}/dist" />
+  <property name="jill-api.lib.name" value="jill-api-lib.jar" />
+
+  <target name="jill-api-lib-clean">
+    <delete dir="${jill-api.lib.build.dir}"/>
+    <delete dir="${jill-api.dist.dir}"/>
+    <delete dir="${jill-api.libs.dir}"/>
+  </target>
+
+  <target name="jill-api-lib-copy-libs" depends="jsr305-lib">
+    <copy todir="${jill-api.libs.dir}" flatten="true">
+      <filelist dir="/" >
+        <file name="${jsr305.dist.dir}/${jsr305.libname}"/>
+      </filelist>
+    </copy>
+  </target>
+
+  <target name="jill-api-lib" depends="jill-api-lib-copy-libs">
+    <mkdir dir="${jill-api.lib.build.outdir}"/>
+    <dependset>
+      <sources>
+        <!-- All source files -->
+          <fileset dir="${jill-api.dir}/src" />
+      </sources>
+      <targets>
+        <fileset dir="${jill-api.lib.build.outdir}"/>
+      </targets>
+    </dependset>
+     <javac srcdir="${jill-api.dir}/src" destdir="${jill-api.lib.build.outdir}"
+          source="1.6" target="1.6" debug="true"
+          includeantruntime="false"  includeDestClasses="false" nowarn="true">
+          <classpath>
+            <filelist dir="/" >
+              <file name="${jsr305.dist.dir}/${jsr305.libname}"/>
+            </filelist>
+          </classpath>
+          <exclude name="com/android/jack/api/example/**"/>
+        </javac>
+    <jar destfile="${jill-api.dist.dir}/${jill-api.lib.name}">
+      <fileset dir="${jill-api.lib.build.outdir}"/>
+    </jar>
+  </target>
+
+
+  <!-- ******************* -->
+  <!-- jill-api            -->
+  <!-- ******************* -->
+  <property name="jill-api.build.dir" value="${jill-api.dir}/build/exec" />
+  <property name="jill-api.build.outdir" value="${jill-api.build.dir}/classes" />
+  <property name="jill-api.name" value="jill-api.jar" />
+
+  <target name="jill-api" depends="jill-api-lib">
+    <jar destfile="${jill-api.dist.dir}/${jill-api.name}">
+      <fileset dir="${jsr305.build.outdir}"/>
+      <fileset dir="${jill-api.lib.build.outdir}"/>
+    </jar>
+  </target>
+
+
+  <!-- ******************* -->
   <!-- jillunittests       -->
   <!-- ******************* -->
   <property name="jillunittests.build.dir" value="${jill.dir}/build/jillunittests" />
@@ -125,8 +192,9 @@
       <classpath>
         <filelist dir="/">
           <file name="${jill.dist.dir}/${jill.execname}" />
+          <file name="${jill-api.dist.dir}/${jill-api.name}" />
           <file name="${jackunittests.dist.dir}/${jackunittests.execname}" />
-        	<file name="${jack-tests.dist.dir}/${jack-tests.execname}" />
+          <file name="${jack-tests.dist.dir}/${jack-tests.execname}" />
         </filelist>
       </classpath>
     </javac>
@@ -182,6 +250,7 @@
   <filelist id="jill.junit.tests.classpath" dir="/">
     <file name="${jack-tests.dist.dir}/${jack-tests.execname}" />
     <file name="${jill.dist.dir}/${jillunittests.execname}" />
+    <file name="${jill-api.dist.dir}/${jill-api.lib.name}" />
   </filelist>
 
   <target name="test-jill-clean" >

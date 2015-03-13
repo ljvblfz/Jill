@@ -18,19 +18,24 @@ package com.android.jill;
 
 import com.android.jack.test.TestsProperties;
 import com.android.jack.test.toolchain.AbstractTestTools;
+import com.android.jill.api.JillProvider;
+import com.android.jill.api.v01.Api01Config;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ServiceLoader;
 
 @Ignore("Tree")
 public class Core {
 
   @BeforeClass
   public static void setUpClass() {
-    Main.class.getClassLoader().setDefaultAssertionStatus(true);
+    Core.class.getClassLoader().setDefaultAssertionStatus(true);
   }
 
   @Test
@@ -42,6 +47,27 @@ public class Core {
     options.output = AbstractTestTools.createTempFile("jillTest", ".zip");
     Jill.process(options);
   }
+
+  @Test
+  public void coreToJayceFromJarWithJillApi() throws Exception {
+    File jillPrebuilt = AbstractTestTools.getPrebuilt("jill");
+
+    ClassLoader classLoader = URLClassLoader.newInstance(new URL[] {jillPrebuilt.toURI().toURL()},
+        Core.class.getClassLoader());
+
+    ServiceLoader<JillProvider> serviceLoader = ServiceLoader.load(JillProvider.class, classLoader);
+    JillProvider provider = serviceLoader.iterator().next();
+
+    Api01Config config = provider.createConfig(Api01Config.class);
+
+    config.setInputJavaBinaryFile(new File(TestsProperties.getAndroidRootDir().getPath()
+        + "/out/target/common/obj/JAVA_LIBRARIES/core-libart_intermediates/classes.jar"));
+    config.setVerbose(true);
+    config.setOutputJackFile(AbstractTestTools.createTempFile("jillTest", ".jack"));
+
+    config.getTask().run();
+  }
+
 
   @Test
   public void coreToJayceFromFolder() throws Exception {
