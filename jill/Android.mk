@@ -26,6 +26,7 @@ LOCAL_JAVA_RESOURCE_DIRS  := rsc
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
+  jill-api \
   asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
@@ -49,6 +50,7 @@ LOCAL_JAVA_RESOURCE_DIRS  := rsc
 LOCAL_JAR_MANIFEST := etc/manifest.txt
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
+  jill-api \
   asm-all-4.1-jack \
   guava-jack \
   jsr305lib-jack \
@@ -72,7 +74,7 @@ LOCAL_MODULE := libjillunittests
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVACFLAGS := -processor com.android.sched.build.SchedAnnotationProcessor
 
-LOCAL_STATIC_JAVA_LIBRARIES := jill
+LOCAL_STATIC_JAVA_LIBRARIES := jill jill-api
 
 LOCAL_JAVA_LIBRARIES := \
   libjackunittests \
