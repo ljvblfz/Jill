@@ -81,6 +81,9 @@
       <fileset dir="${jill.dir}/rsc">
         <include name="**/*" />
       </fileset>
+      <fileset dir="${jill-api.lib.build.outdir}">
+        <include name="**/*" />
+      </fileset>
       <fileset dir="${guava.build.outdir}">
         <include name="**/*" />
       </fileset>
