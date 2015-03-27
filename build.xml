@@ -66,7 +66,7 @@
     <mkdir dir="${jill.build.outdir}"/>
     <mkdir dir="${jill.dist.dir}"/>
     <!-- compile -->
-    <javac srcdir="${jill.dir}/src"
+    <javac  encoding="UTF-8" srcdir="${jill.dir}/src"
           destdir="${jill.build.outdir}"
           source="1.5" target="1.5"
           debug="true" includeantruntime="false">
@@ -141,7 +141,7 @@
         <fileset dir="${jill-api.lib.build.outdir}"/>
       </targets>
     </dependset>
-     <javac srcdir="${jill-api.dir}/src" destdir="${jill-api.lib.build.outdir}"
+     <javac  encoding="UTF-8" srcdir="${jill-api.dir}/src" destdir="${jill-api.lib.build.outdir}"
           source="1.6" target="1.6" debug="true"
           includeantruntime="false"  includeDestClasses="false" nowarn="true">
           <classpath>
@@ -188,7 +188,7 @@
     <!-- project layout -->
     <mkdir dir="${jillunittests.build.outdir}"/>
     <!-- compile -->
-    <javac srcdir="${jill.dir}/tests"
+    <javac  encoding="UTF-8" srcdir="${jill.dir}/tests"
           destdir="${jillunittests.build.outdir}"
           source="1.5" target="1.5"
           debug="true" includeantruntime="false">
@@ -234,7 +234,7 @@
     <mkdir dir="${asm4.build.outdir}"/>
     <mkdir dir="${asm4.dist.dir}"/>
     <!-- compile -->
-    <javac srcdir="${asm4.dir}/src"
+    <javac  encoding="UTF-8" srcdir="${asm4.dir}/src"
           destdir="${asm4.build.outdir}"
           source="1.5" target="1.5"
           debug="true" includeantruntime="false"/>
