@@ -19,9 +19,15 @@
 
   <import file="../jack/build.xml"/>
 
-  <target name="dist" depends="jill, jill-api, jillunittests"/>
+  <target name="dist" depends="jill,
+    jill-api,
+    jill-api-src,
+    jillunittests"/>
 
-  <target name="clean" depends="jill-clean, jill-api-lib-clean, jillunittests-clean,
+  <target name="clean" depends="jill-clean,
+    jill-api-lib-clean,
+    jill-api-src-clean,
+    jillunittests-clean,
     asm4-clean" />
 
   <dirname property="jill-project.dir" file="${ant.file.jill}"/>
@@ -169,6 +175,21 @@
       <fileset dir="${jsr305.build.outdir}"/>
       <fileset dir="${jill-api.lib.build.outdir}"/>
     </jar>
+  </target>
+
+
+  <!-- ******************* -->
+  <!-- jill-api-src        -->
+  <!-- ******************* -->
+  <property name="jill-api-src.name" value="jill-api-src.zip" />
+
+  <target name="jill-api-src-clean">
+    <delete dir="${jill-api.dist.dir}/${jill-api-src.name}"/>
+  </target>
+
+  <target name="jill-api-src">
+   <zip destfile="${jill-api.dist.dir}/${jill-api-src.name}"
+        basedir="${jill-api.dir}/src" />
   </target>
 
 
