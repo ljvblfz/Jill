@@ -181,7 +181,7 @@ public class AnnotationWriter extends JillWriter {
   private void writeAnnotation(@Nonnull AnnotationNode anno,
       @Nonnull RetentionPolicy retentionPolicy) throws IOException {
     sourceInfoWriter.writeUnknwonDebugBegin();
-    writer.writeKeyword(Token.ANNOTATION_LITERAL);
+    writer.writeKeyword(Token.ANNOTATION);
     writer.writeOpen();
     writer.writeRetentionPolicyEnum(retentionPolicy);
     writer.writeId(anno.desc);

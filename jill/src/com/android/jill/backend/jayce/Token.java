@@ -45,7 +45,7 @@ public enum Token {
   ADD_OPERATION("+"),
   ALLOC("alloc"),
   AND_OPERATION("&&"),
-  ANNOTATION_LITERAL("annotation-literal"),
+  ANNOTATION("annotation-literal"),
   ANNOTATION_METHOD("annotation-method"),
   ANNOTATION_TYPE("annotation"),
   ARRAY_LENGTH("array-length"),
