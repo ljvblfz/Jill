@@ -46,7 +46,7 @@ public class Main {
 
       if (options.askForVersion()) {
         System.out.println("Jill");
-        System.out.println("Version: " + Jill.getVersion().getVersion() + '.');
+        System.out.println("Version: " + Jill.getVersion().getVerboseVersion() + '.');
         System.exit(ExitStatus.SUCCESS);
       }
 
