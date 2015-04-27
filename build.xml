@@ -67,8 +67,20 @@
     </copy>
   </target>
 
-  <target name="jill" depends="jill-copy-libs">
+  <target name="jill-check">
+    <union id ="jill.uptodate.files">
+      <filelist refid="jill.libs.filelist" />
+    </union>
+    <uptodate property="jill.uptodate" targetfile="${jill.dist.dir}/${jill.execname}">
+      <srcfiles dir="${jill.dir}/src" />
+      <srcresources refid="jill.uptodate.files" />
+      <srcfiles dir="${jill.dir}/rsc"/>
+    </uptodate>
+  </target>
+
+  <target name="jill" depends="jill-copy-libs, jill-check" unless="jill.uptodate">
     <!-- project layout -->
+    <delete dir="${jill.build.outdir}"/>
     <mkdir dir="${jill.build.outdir}"/>
     <mkdir dir="${jill.dist.dir}"/>
     <!-- compile -->
@@ -77,9 +89,7 @@
           source="1.5" target="1.5"
           debug="true" includeantruntime="false">
       <classpath>
-        <fileset dir="${jill.libs.dir}">
-           <include name="**/*.jar"/>
-         </fileset>
+        <filelist refid="jill.libs.filelist" />
       </classpath>
     </javac>
     <!-- package -->
@@ -136,27 +146,24 @@
     </copy>
   </target>
 
-  <target name="jill-api-lib" depends="jill-api-lib-copy-libs">
+  <target name="jill-api-check">
+    <uptodate property="jill-api.uptodate" targetfile="${jill-api.dist.dir}/${jill-api.lib.name}">
+      <srcfiles dir="${jill-api.dir}/src" />
+      <srcfiles file="${jsr305.dist.dir}/${jsr305.libname}" />
+    </uptodate>
+  </target>
+
+  <target name="jill-api-lib" depends="jill-api-lib-copy-libs, jill-api-check" unless="jill-api.uptodate">
+    <delete dir="${jill-api.lib.build.outdir}"/>
     <mkdir dir="${jill-api.lib.build.outdir}"/>
-    <dependset>
-      <sources>
-        <!-- All source files -->
-          <fileset dir="${jill-api.dir}/src" />
-      </sources>
-      <targets>
-        <fileset dir="${jill-api.lib.build.outdir}"/>
-      </targets>
-    </dependset>
-     <javac  encoding="UTF-8" srcdir="${jill-api.dir}/src" destdir="${jill-api.lib.build.outdir}"
+    <javac  encoding="UTF-8" srcdir="${jill-api.dir}/src" destdir="${jill-api.lib.build.outdir}"
           source="1.6" target="1.6" debug="true"
           includeantruntime="false"  includeDestClasses="false" nowarn="true">
-          <classpath>
-            <filelist dir="/" >
-              <file name="${jsr305.dist.dir}/${jsr305.libname}"/>
-            </filelist>
-          </classpath>
-          <exclude name="com/android/jack/api/example/**"/>
-        </javac>
+      <classpath>
+        <filelist dir="/" files="${jsr305.dist.dir}/${jsr305.libname}" />
+      </classpath>
+      <exclude name="com/android/jack/api/example/**"/>
+    </javac>
     <jar destfile="${jill-api.dist.dir}/${jill-api.lib.name}">
       <fileset dir="${jill-api.lib.build.outdir}"/>
     </jar>
@@ -188,7 +195,7 @@
   </target>
 
   <target name="jill-api-src">
-   <zip destfile="${jill-api.dist.dir}/${jill-api-src.name}"
+    <zip destfile="${jill-api.dist.dir}/${jill-api-src.name}"
         basedir="${jill-api.dir}/src" />
   </target>
 
@@ -205,8 +212,19 @@
     <delete dir="${jill.dist.dir}/${jillunittests.execname}" />
   </target>
 
-  <target name="jillunittests" depends="jill, jackunittests">
+  <target name="jillunittests-check">
+    <uptodate property="jillunittests.uptodate" targetfile="${jill.dist.dir}/${jillunittests.execname}">
+      <srcfiles dir="${jill.dir}/tests" />
+      <srcfiles file="${jill.dist.dir}/${jill.execname}" />
+      <srcfiles file="${jill-api.dist.dir}/${jill-api.name}" />
+      <srcfiles file="${jackunittests.dist.dir}/${jackunittests.execname}" />
+      <srcfiles file="${jack-tests.dist.dir}/${jack-tests.execname}" />
+    </uptodate>
+  </target>
+
+  <target name="jillunittests" depends="jill, jill-api, jackunittests, jillunittests-check" unless="jillunittests.uptodate">
     <!-- project layout -->
+    <delete dir="${jillunittests.build.outdir}"/>
     <mkdir dir="${jillunittests.build.outdir}"/>
     <!-- compile -->
     <javac  encoding="UTF-8" srcdir="${jill.dir}/tests"
@@ -224,12 +242,12 @@
     </javac>
     <!-- package -->
     <copy todir="${jillunittests.build.outdir}">
-        <fileset dir="${jill.build.outdir}">
-          <include name="**/*" />
-        </fileset>
-        <fileset dir="${jackunittests.build.outdir}">
-          <include name="**/*" />
-        </fileset>
+      <fileset dir="${jill.build.outdir}">
+        <include name="**/*" />
+      </fileset>
+      <fileset dir="${jackunittests.build.outdir}">
+        <include name="**/*" />
+      </fileset>
     </copy>
     <jar destfile="${jill.dist.dir}/${jillunittests.execname}"
             basedir="${jillunittests.build.outdir}"
@@ -255,6 +273,14 @@
     <mkdir dir="${asm4.build.outdir}"/>
     <mkdir dir="${asm4.dist.dir}"/>
     <!-- compile -->
+    <dependset>
+      <sources>
+        <fileset dir="${asm4.dir}/src" />
+      </sources>
+      <targets>
+        <fileset file="${asm4.dist.dir}/${asm4.libname}"/>
+      </targets>
+    </dependset>
     <javac  encoding="UTF-8" srcdir="${asm4.dir}/src"
           destdir="${asm4.build.outdir}"
           source="1.5" target="1.5"
@@ -268,7 +294,6 @@
   <!-- ******************* -->
   <!-- tests               -->
   <!-- ******************* -->
-
   <property name="jill.tests.output" value="${jill-project.dir}/tests-results"/>
 
   <filelist id="jill.junit.tests.classpath" dir="/">
@@ -287,9 +312,9 @@
       <formatter type="xml"/>
       <jvmarg value="-Dtests.config=${tests.config}"/>
       <jvmarg value="-ea"/>
-       <classpath>
+      <classpath>
         <filelist refid="jill.junit.tests.classpath" />
-       </classpath>
+      </classpath>
       <test name="com.android.jill.PreSubmitTests"
         todir="${jill.tests.output}/test-jill/"
         outfile="test-jill" />
@@ -309,9 +334,9 @@
       <formatter type="xml"/>
       <jvmarg value="-Dtests.config=${tests.config}"/>
       <jvmarg value="-ea"/>
-       <classpath>
+      <classpath>
         <filelist refid="jill.junit.tests.classpath" />
-       </classpath>
+      </classpath>
       <test name="com.android.jill.LongLastingTests"
         todir="${jill.tests.output}/test-jill-long/"
         outfile="test-jill-long" />
@@ -331,9 +356,9 @@
       <formatter type="xml"/>
       <jvmarg value="-Dtests.config=${tests.config}"/>
       <jvmarg value="-ea"/>
-       <classpath>
+      <classpath>
         <filelist refid="jill.junit.tests.classpath" />
-       </classpath>
+      </classpath>
       <test name="com.android.jill.AllTests"
         todir="${jill.tests.output}/test-jill-all/"
         outfile="test-jill-all" />
