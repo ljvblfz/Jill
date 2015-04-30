@@ -34,10 +34,7 @@ import javax.annotation.Nonnull;
 public class Options {
 
   @CheckForNull
-  @Argument(
-      usage =
-      "class files to be transformed contained recursively in directories or in a zip/jar file",
-      metaVar = "FILE|DIRECTORY")
+  @Argument(usage = "read command line from file", metaVar = "@<FILE>")
   private File binaryFile;
 
   @Option(name = "--verbose", usage = "enable verbosity (default: false)")

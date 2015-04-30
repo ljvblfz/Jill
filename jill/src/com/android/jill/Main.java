@@ -24,6 +24,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ParserProperties;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class Main {
       options = getOptions(args);
 
       if (options.askForHelp()) {
-        printUsage(new CmdLineParser(options));
+        printUsage(System.out);
         System.exit(ExitStatus.SUCCESS);
       }
 
@@ -60,7 +61,7 @@ public class Main {
       }
       CmdLineParser parser = e.getParser();
       if (parser != null) {
-        printUsage(parser);
+        printUsage(System.out);
       } else {
         System.err.println("Try --help for help");
       }
@@ -111,10 +112,13 @@ public class Main {
     return options;
   }
 
-  private static void printUsage(@Nonnull CmdLineParser parser) {
-    System.err.print("Main: ");
-    parser.printSingleLineUsage(System.err);
-    System.err.println();
-    parser.printUsage(System.err);
+  protected static void printUsage(@Nonnull PrintStream printStream) {
+    CmdLineParser parser =
+        new CmdLineParser(new Options(), ParserProperties.defaults().withUsageWidth(100));
+    printStream.println("Usage: <options> <class files to be transformed contained recursively"
+        + " in directories or in a zip/jar file>");
+    printStream.println();
+    printStream.println("Options:");
+    parser.printUsage(printStream);
   }
 }
