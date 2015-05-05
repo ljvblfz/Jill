@@ -15,11 +15,11 @@
    limitations under the License.
 -->
 
-<project name="jill" default="dist">
+<project name="jill" default="all">
 
   <import file="../jack/build.xml"/>
 
-  <target name="dist" depends="jill,
+  <target name="all" depends="jill,
     jill-api,
     jill-api-src,
     jillunittests"/>
@@ -28,7 +28,8 @@
     jill-api-lib-clean,
     jill-api-src-clean,
     jillunittests-clean,
-    asm4-clean" />
+    asm4-clean,
+    dist-clean"/>
 
   <dirname property="jill-project.dir" file="${ant.file.jill}"/>
 
@@ -36,6 +37,28 @@
   <property name="jill-api.dir" value="${jill-project.dir}/jill-api" />
   <property name="asm4.dir" value="${jill-project.dir}/asm4" />
 
+  <!-- ******************* -->
+  <!-- Distributed files   -->
+  <!-- ******************* -->
+
+  <property name="jill-top-dist.dir" value="${jill-project.dir}/dist" />
+
+  <target name="dist-clean">
+    <delete dir="${jill-top-dist.dir}"/>
+  </target>
+
+  <target name="dist" depends="jill,
+    jill-api,
+    jill-api-src">
+    <mkdir dir="${jill-top-dist.dir}"/>
+    <copy todir="${jill-top-dist.dir}" flatten="true">
+      <filelist dir="/" >
+        <file name="${jill.dist.dir}/${jill.execname}" />
+        <file name="${jill-api.dist.dir}/${jill-api.name}" />
+        <file name="${jill-api.dist.dir}/${jill-api-src.name}" />
+      </filelist>
+    </copy>
+  </target>
 
   <!-- ******************* -->
   <!-- jill                -->
