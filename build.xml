@@ -245,7 +245,7 @@
     </uptodate>
   </target>
 
-  <target name="jillunittests" depends="jill, jill-api, jackunittests, jillunittests-check" unless="jillunittests.uptodate">
+  <target name="jillunittests" depends="jill, jill-api, jackunittests, jack-tests, jillunittests-check" unless="jillunittests.uptodate">
     <!-- project layout -->
     <delete dir="${jillunittests.build.outdir}"/>
     <mkdir dir="${jillunittests.build.outdir}"/>
