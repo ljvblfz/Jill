@@ -132,12 +132,15 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   }
 
   private static class CmpOperands{
+    @Nonnegative
+    int opcode;
     @Nonnull
     Variable lhs;
     @Nonnull
     Variable rhs;
 
-    public CmpOperands(@Nonnull Variable lhs, @Nonnull Variable rhs) {
+    public CmpOperands(@Nonnegative int opcode, @Nonnull Variable lhs, @Nonnull Variable rhs) {
+      this.opcode = opcode;
       this.lhs = lhs;
       this.rhs = rhs;
     }
@@ -1379,7 +1382,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         Variable lhs = getStackVariable(frame, TOP_OF_STACK - 1);
         Variable rhs = getStackVariable(frame, TOP_OF_STACK);
         Variable result = getStackVariable(nextFrame, TOP_OF_STACK);
-        cmpOperands.put(result, new CmpOperands(lhs, rhs));
+        cmpOperands.put(result, new CmpOperands(insn.getOpcode(), lhs, rhs));
         break;
       }
       case DSUB:
@@ -1732,15 +1735,27 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         Variable topOfStackVariable = getStackVariable(frame, TOP_OF_STACK);
         CmpOperands cmpOps = cmpOperands.get(topOfStackVariable);
         if (cmpOps != null) {
+          // CmpOperands concerns double, float and long types
           assert jumpInsn.getOpcode() != IFNONNULL && jumpInsn.getOpcode() != IFNULL;
+          // Not operator can be generate only for double and long types to manage comparisons with
+          // Nan.
+          Token comparisonToken = getConditionToken(jumpInsn.getOpcode());
+          boolean needNotoperator = needNotOperator(comparisonToken, cmpOps);
 
           sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
           writer.writeCatchBlockIds(currentCatchList);
           writer.writeKeyword(Token.IF_STATEMENT);
           writer.writeOpen();
-          // Condition is inverted to be compliant with language level semantics
-          // This has been done for comparison to NaN, which forces the branching order.
-          Token comparisonToken = invertComparisonToken(getConditionToken(jumpInsn.getOpcode()));
+          if (needNotoperator) {
+            sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+            writer.writeKeyword(Token.PREFIX_NOT_OPERATION);
+            writer.writeOpen();
+          } else {
+            // Condition is inverted to be compliant with language level semantics
+            // This has been done for comparison to NaN, which forces the branching order.
+            comparisonToken = invertComparisonToken(comparisonToken);
+          }
+
           sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
           writer.writeKeyword(comparisonToken);
           writer.writeOpen();
@@ -1748,6 +1763,12 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
           writeLocalRef(cmpOps.rhs);
           sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
           writer.writeClose();
+
+          if (needNotoperator) {
+            sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+            writer.writeClose();
+          }
+
           int labeledStatmentIndex = insIndex + 1;
           writeGoto(labeledStatmentIndex);
           writeGoto(jumpInsn.label);
@@ -1757,7 +1778,6 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
           insertLabeledStatementIfNecessary(labeledStatmentIndex);
 
           cmpOperands.remove(topOfStackVariable);
-
         } else {
           sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
           writer.writeCatchBlockIds(currentCatchList);
@@ -1889,6 +1909,31 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
         return cmpToken;
       }
     }
+  }
+
+  @Nonnull
+  private boolean needNotOperator(@Nonnull Token cmpToken, @Nonnull CmpOperands cmpOps) {
+    switch (cmpToken) {
+      case GTE_OPERATION:
+      case GT_OPERATION: {
+        return !isCmpg(cmpOps);
+      }
+      case LTE_OPERATION:
+      case LT_OPERATION: {
+        return !isCmpl(cmpOps);
+      }
+      default: {
+        return false;
+      }
+    }
+  }
+
+  private boolean isCmpl(@Nonnull CmpOperands cmpOps) {
+    return cmpOps.opcode == DCMPL || cmpOps.opcode == FCMPL;
+  }
+
+  private boolean isCmpg(@Nonnull CmpOperands cmpOps) {
+    return cmpOps.opcode == DCMPG || cmpOps.opcode == FCMPG;
   }
 
   private void writeGoto(LabelNode labelNode) throws IOException {
