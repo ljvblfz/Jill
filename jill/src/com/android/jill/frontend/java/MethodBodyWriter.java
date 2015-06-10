@@ -2065,7 +2065,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeKeyword(Token.LOCAL);
     writer.writeOpen();
     writer.writeId(v.getId());
-    writer.writeInt(NO_MODIFIER);
+    writer.writeInt(v.isSynthetic() ? Opcodes.ACC_SYNTHETIC : NO_MODIFIER);
     writer.writeId(v.getType().getDescriptor());
     writer.writeId(v.getName());
     writer.writeOpenNodeList(); // Empty annotation set, annotations on locals are not kept
@@ -2257,6 +2257,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     String tmpVarId = "-swap_tmp_" + typeToUntypedDesc(topOfStackBeforeInst.getType());
     Variable tmpVariable =
         getVariable(tmpVarId, tmpVarId, topOfStackBeforeInst.getType(), null);
+    tmpVariable.setSynthetic();
     return tmpVariable;
   }
 
@@ -2423,8 +2424,9 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     BasicValue bv = frame.getStack(stackHeight);
     assert bv != BasicValue.UNINITIALIZED_VALUE;
     String id = "-s_" + stackHeight + "_" + typeToUntypedDesc(bv.getType());
-    return getVariable(id, id, typeToUntyped(bv.getType()), null);
-
+    Variable variable = getVariable(id, id, typeToUntyped(bv.getType()), null);
+    variable.setSynthetic();
+    return variable;
   }
 
   @Nonnull

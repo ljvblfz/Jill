@@ -42,6 +42,8 @@ public class Variable {
 
   private boolean isParameter;
 
+  private boolean isSynthetic;
+
   public Variable(@Nonnull String id, @Nonnull String name, @Nonnull Type type,
       @CheckForNull String signature) {
     this.id = id;
@@ -50,6 +52,7 @@ public class Variable {
     this.signature = signature;
     isThis = false;
     isParameter = false;
+    isSynthetic = false;
   }
 
   @Nonnull
@@ -95,5 +98,13 @@ public class Variable {
 
   public void setParameter() {
     this.isParameter = true;
+  }
+
+  public boolean isSynthetic() {
+    return isSynthetic;
+  }
+
+  public void setSynthetic() {
+    this.isSynthetic = true;
   }
 }
