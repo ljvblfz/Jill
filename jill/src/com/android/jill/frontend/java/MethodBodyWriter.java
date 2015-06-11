@@ -1182,9 +1182,13 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
           writer.writeKeyword(Token.ASG_OPERATION);
           writer.writeOpen();
           writeLocalAccess(nextFrame, varInsn.var);
-          if (getLocalVariable(nextFrame, varInsn.var).getType() == Type.BOOLEAN_TYPE) {
+          Type destType = getLocalVariable(nextFrame, varInsn.var).getType();
+          if (destType == Type.BOOLEAN_TYPE) {
             writeCastOperation(Token.REINTERPRETCAST_OPERATION, frame,
                 Type.BOOLEAN_TYPE.getDescriptor(), TOP_OF_STACK);
+          } else if (getStackVariable(frame, TOP_OF_STACK).getType() != destType) {
+            writeCastOperation(Token.REINTERPRETCAST_OPERATION, frame, destType.getDescriptor(),
+                TOP_OF_STACK);
           } else {
             writeStackAccess(frame, TOP_OF_STACK);
           }
