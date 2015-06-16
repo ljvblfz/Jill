@@ -2392,18 +2392,23 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     String id;
     Type localType;
     String signature;
+    Variable v;
     if (lvn == null) {
       id = getUnnamedLocalId(localIdx, bv.getType());
       localName = id;
       localType = typeToUntyped(bv.getType());
       signature = null;
+      v = getVariable(id, localName, localType, signature);
+      // Unnamed variable will be define as synthetic
+      v.setSynthetic();
     } else {
       id = getNamedLocalId(lvn);
       localName = lvn.name;
       localType = Type.getType(lvn.desc);
       signature = lvn.signature;
+      v = getVariable(id, localName, localType, signature);
     }
-    return getVariable(id, localName, localType, signature);
+    return v;
   }
 
   @Nonnull
