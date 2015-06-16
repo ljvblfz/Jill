@@ -18,10 +18,10 @@ package com.android.jill;
 
 import com.android.jill.frontend.java.JavaTransformer;
 import com.android.jill.utils.FileUtils;
+import com.android.sched.util.Version;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -34,8 +34,6 @@ import javax.annotation.Nonnull;
  */
 public class Jill {
 
-  @Nonnull
-  private static final String PROPERTIES_FILE = "jill.properties";
   @CheckForNull
   private static Version version = null;
 
@@ -66,11 +64,10 @@ public class Jill {
   @Nonnull
   public static Version getVersion() {
     if (version == null) {
-      InputStream is = Jill.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
-      if (is != null) {
-        version = new Version(is);
-      } else {
-        System.err.println("Failed to open Jack properties file " + PROPERTIES_FILE);
+      try {
+        version = new Version("jill", Jill.class.getClassLoader());
+      } catch (IOException e) {
+        System.err.println("Failed to read version properties file: " + e.getMessage());
         throw new AssertionError();
       }
     }
