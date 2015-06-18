@@ -21,7 +21,9 @@ import com.android.jill.api.ConfigNotSupportedException;
 import com.android.jill.api.JillConfig;
 import com.android.jill.api.JillProvider;
 import com.android.jill.api.v01.Api01Config;
+import com.android.jill.api.v01.Cli01Config;
 import com.android.jill.api.v01.impl.Api01ConfigImpl;
+import com.android.jill.api.v01.impl.Cli01ConfigImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +44,8 @@ public class JillProviderImpl implements JillProvider {
       throws ConfigNotSupportedException {
     if (cls == Api01Config.class) {
       return (T) new Api01ConfigImpl();
+    } else if (cls == Cli01Config.class) {
+      return (T) new Cli01ConfigImpl();
     }
 
     throw new ConfigNotSupportedException(cls.getName() + " are not supported");
@@ -50,14 +54,15 @@ public class JillProviderImpl implements JillProvider {
   @Override
   @Nonnull
   public <T extends JillConfig> boolean isConfigSupported(@Nonnull Class<T> cls) {
-    return cls == Api01Config.class;
+    return cls == Api01Config.class || cls == Cli01Config.class;
   }
 
   @Override
   @Nonnull
   public Collection<Class<? extends JillConfig>> getSupportedConfigs() {
-    List<Class<? extends JillConfig>> result = new ArrayList<Class<? extends JillConfig>>(1);
+    List<Class<? extends JillConfig>> result = new ArrayList<Class<? extends JillConfig>>(2);
     result.add(Api01Config.class);
+    result.add(Cli01Config.class);
     return result;
   }
 
