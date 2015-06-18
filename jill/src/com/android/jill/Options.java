@@ -22,6 +22,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,11 @@ public class Options {
   @Option(name = "--no-debug", usage = "disable debug info emission")
   protected boolean disableEmitDebugInfo = false;
 
+  @CheckForNull
+  private PrintStream err;
+  @CheckForNull
+  private File workingDir;
+
   public void checkValidity() throws IllegalOptionsException {
     if (askForVersion() || askForHelp()) {
       return;
@@ -85,13 +91,21 @@ public class Options {
   @Nonnull
   public File getOutput() {
     assert output != null;
-    return output;
+    if (workingDir != null) {
+      return new File(workingDir, output.getPath());
+    } else {
+      return output;
+    }
   }
 
   @Nonnull
   public File getBinaryFile() {
     assert binaryFile != null;
-    return binaryFile;
+    if (workingDir != null) {
+      return new File(workingDir, binaryFile.getPath());
+    } else {
+      return binaryFile;
+    }
   }
 
   public boolean askForVersion() {
@@ -123,8 +137,24 @@ public class Options {
     return outputContainer;
   }
 
+
+  public void setStandardError(@Nonnull PrintStream standardError) {
+    err = standardError;
+  }
+
+  @CheckForNull
+  public PrintStream getStandardError() {
+    return err;
+  }
+
+  public void setWorkingDirectory(@Nonnull File workingDir) {
+    this.workingDir = workingDir;
+  }
+
   private void checkBinaryFileValidity() throws IllegalOptionsException {
     assert binaryFile != null;
+
+    File binaryFile = getBinaryFile();
 
     if (!binaryFile.exists()) {
       throw new IllegalOptionsException(binaryFile.getName() + " does not exists.");
@@ -149,6 +179,8 @@ public class Options {
 
   private void checkOutputDir() throws IllegalOptionsException {
     assert output != null;
+
+    File output = getOutput();
 
     if (!output.exists()) {
       throw new IllegalOptionsException(output.getName() + " does not exist.");

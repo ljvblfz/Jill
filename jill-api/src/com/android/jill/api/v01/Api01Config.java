@@ -24,7 +24,7 @@ import java.io.File;
 import javax.annotation.Nonnull;
 
 /**
-* A configuration implementation for API level 01 of Jill.
+* A configuration for API level 01 of Jill.
 */
 public interface Api01Config extends JillConfig {
 

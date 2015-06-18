@@ -52,9 +52,8 @@ public class Main {
         System.exit(ExitStatus.SUCCESS);
       }
 
-      Jill.process(options);
+      System.exit(runJill(System.err, options));
 
-      System.exit(ExitStatus.SUCCESS);
     } catch (CmdLineException e) {
       if (e.getMessage() != null) {
         System.err.println(e.getMessage());
@@ -70,21 +69,29 @@ public class Main {
       System.err.println(e.getMessage());
 
       System.exit(ExitStatus.FAILURE_USAGE);
-    } catch (JillException e) {
-      if (options != null) {
-        System.err.println("Binary transformation of " + options.getBinaryFile().getName()
-            + " failed.");
-        if (options.isVerbose()) {
-          e.printStackTrace();
-        }
-      } else {
-        System.err.println("Binary transformation failed.");
-      }
-
-      System.exit(ExitStatus.FAILURE_INTERNAL);
     }
 
     System.exit(ExitStatus.FAILURE_UNKNOWN);
+  }
+
+  protected static int runJill(@Nonnull PrintStream err, @Nonnull Options options) {
+    try {
+      Jill.process(options);
+
+    } catch (JillException e) {
+      if (options != null) {
+        err.println("Binary transformation of " + options.getBinaryFile().getName()
+            + " failed.");
+        if (options.isVerbose()) {
+          e.printStackTrace(err);
+        }
+      } else {
+        err.println("Binary transformation failed.");
+      }
+
+      return ExitStatus.FAILURE_INTERNAL;
+    }
+    return ExitStatus.SUCCESS;
   }
 
   @Nonnull
