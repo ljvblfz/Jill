@@ -91,7 +91,7 @@ public class Options {
   @Nonnull
   public File getOutput() {
     assert output != null;
-    if (workingDir != null) {
+    if (workingDir != null && !output.isAbsolute()) {
       return new File(workingDir, output.getPath());
     } else {
       return output;
@@ -101,7 +101,7 @@ public class Options {
   @Nonnull
   public File getBinaryFile() {
     assert binaryFile != null;
-    if (workingDir != null) {
+    if (workingDir != null && !binaryFile.isAbsolute()) {
       return new File(workingDir, binaryFile.getPath());
     } else {
       return binaryFile;
