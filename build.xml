@@ -17,9 +17,13 @@
 
 <project name="jill" default="all">
 
+  <description>
+      This buildfile is used to build all Jill projects and run tests. It depends on Jack's build.xml.
+  </description>
+
   <import file="../jack/build.xml"/>
 
-  <target name="all" depends="jill,
+  <target name="all" description="build all Jill projects" depends="jill,
     jill-api,
     jill-api-src,
     jillunittests"/>
@@ -47,7 +51,7 @@
     <delete dir="${jill-top-dist.dir}"/>
   </target>
 
-  <target name="dist" depends="jill,
+  <target name="dist" description="package a Jill distribution" depends="jill,
     jill-api,
     jill-api-src">
     <mkdir dir="${jill-top-dist.dir}"/>
@@ -329,7 +333,8 @@
     <delete dir="${jill.tests.output}"/>
   </target>
 
-  <target name="test-jill" depends="tests-check-config, jillunittests">
+  <target name="test-jill" description="run Jill tests that must pass before submitting a change"
+    depends="tests-check-config, jillunittests">
     <mkdir dir="${jill.tests.output}/test-jill/html"/>
     <junit fork="yes" failureproperty="test-jill.failure">
       <formatter type="xml"/>
@@ -351,7 +356,8 @@
     <fail message="TESTS FAILED" if="test-jill.failure" />
   </target>
 
-  <target name="test-jill-long" depends="tests-check-config, jillunittests">
+  <target name="test-jill-long" description="run long lasting Jill tests"
+    depends="tests-check-config, jillunittests">
     <mkdir dir="${jill.tests.output}/test-jill-long/html"/>
     <junit fork="yes" failureproperty="test-jill.failure">
       <formatter type="xml"/>
@@ -373,7 +379,8 @@
     <fail message="TESTS FAILED" if="test-jill.failure" />
   </target>
 
-  <target name="test-jill-all" depends="tests-check-config, jillunittests">
+  <target name="test-jill-all" description="runs all Jill tests"
+  depends="tests-check-config, jillunittests">
     <mkdir dir="${jill.tests.output}/test-jill-all/html"/>
     <junit fork="yes" failureproperty="test-jill.failure">
       <formatter type="xml"/>
