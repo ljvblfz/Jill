@@ -21,7 +21,6 @@ import com.android.jack.test.toolchain.AbstractTestTools;
 import com.android.jill.api.JillProvider;
 import com.android.jill.api.v01.Api01Config;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -32,11 +31,6 @@ import java.util.ServiceLoader;
 
 @Ignore("Tree")
 public class Core {
-
-  @BeforeClass
-  public static void setUpClass() {
-    Core.class.getClassLoader().setDefaultAssertionStatus(true);
-  }
 
   @Test
   public void coreToJayceFromJar() throws Exception {
