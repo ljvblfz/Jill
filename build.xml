@@ -47,7 +47,9 @@
     <delete dir="${jill-top-dist.dir}"/>
   </target>
 
-  <target name="dist" depends="jill,
+  <target name="dist" description="package a Jill distribution" depends="
+    dist-check,
+    jill,
     jill-api,
     jill-api-src">
     <mkdir dir="${jill-top-dist.dir}"/>
