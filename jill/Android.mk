@@ -33,7 +33,14 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
   args4j-jack \
   schedlib
 
+JILL_VERSION_FILE := $(call local-intermediates-dir,COMMON)/generated.version/jill-version.properties
+LOCAL_JAVA_RESOURCE_FILES += $(JILL_VERSION_FILE)
+LOCAL_ADDITIONAL_DEPENDENCIES += $(JILL_VERSION_FILE)
+
 include $(BUILD_HOST_JAVA_LIBRARY)
+
+$(JILL_VERSION_FILE): $(TOP_DIR)$(LOCAL_PATH)/../version.properties | $(ACP)
+	$(copy-file-to-target)
 
 # Include this library in the build server's output directory
 $(call dist-for-goals, dist_files, $(LOCAL_BUILT_MODULE):jill.jar)
