@@ -58,6 +58,27 @@
         <file name="${jill-api.dist.dir}/${jill-api-src.name}" />
       </filelist>
     </copy>
+
+    <mkdir dir="${jill-top-dist.dir}/tmp"/>
+
+    <copy file="${jill-project.dir}/version.properties" tofile="${jill-top-dist.dir}/tmp/version.properties"/>
+     <propertyfile file="${jill-top-dist.dir}/tmp/version.properties">
+       <entry key="version.sha" value="${dist.sha}"/>
+       <entry key="version.buildid" value="${dist.build-id}"/>
+     </propertyfile>
+
+    <copy file="${jill-top-dist.dir}/tmp/version.properties" tofile="${jill-top-dist.dir}/tmp/jill-version.properties"/>
+     <jar destfile="${jill-top-dist.dir}/${jill.execname}" update="true"
+       basedir="${jill-top-dist.dir}/tmp"
+       includes="jill-version.properties"/>
+
+    <copy file="${jill-top-dist.dir}/tmp/version.properties" tofile="${jill-top-dist.dir}/tmp/jill-api-version.properties"/>
+     <jar destfile="${jill-top-dist.dir}/${jill-api.name}" update="true"
+       basedir="${jill-top-dist.dir}/tmp"
+       includes="jill-api-version.properties"/>
+
+    <delete dir="${jill-top-dist.dir}/tmp"/>
+
   </target>
 
   <!-- ******************* -->
