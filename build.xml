@@ -166,6 +166,10 @@
         <include name="**/*" />
       </fileset>
     </copy>
+
+    <copy file="${jill-project.dir}/version.properties"
+          tofile="${jill.build.outdir}/jill-version.properties"/>
+
     <jar destfile="${jill.dist.dir}/${jill.execname}"
           manifest="${jill.dir}/etc/manifest.txt"
           basedir="${jill.build.outdir}"
@@ -228,6 +232,10 @@
   <property name="jill-api.name" value="jill-api.jar" />
 
   <target name="jill-api" depends="jill-api-lib">
+
+    <copy file="${jill-project.dir}/version.properties"
+          tofile="${jill-api.lib.build.outdir}/jill-api-version.properties"/>
+
     <jar destfile="${jill-api.dist.dir}/${jill-api.name}">
       <fileset dir="${jsr305.build.outdir}"/>
       <fileset dir="${jill-api.lib.build.outdir}"/>
