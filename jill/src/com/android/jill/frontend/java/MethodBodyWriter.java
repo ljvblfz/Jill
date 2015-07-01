@@ -557,7 +557,6 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     for (TryCatchBlockNode tryCatchNode : currentMethod.tryCatchBlocks) {
       String id = getCatchId(tryCatchNode.handler);
       if (tryCatchNode.start == labelNode) {
-        assert !currentCatchList.contains(id);
         currentCatchList.add(id);
       } else if (tryCatchNode.end == labelNode) {
         assert currentCatchList.contains(id);
