@@ -731,7 +731,11 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeKeyword(Token.ARRAY_REF);
     writer.writeOpen();
     Type refType = frame.getStack(frame.getStackSize() + startIdx).getType();
-    assert refType.getSort() == Type.ARRAY;
+
+    // Ensure reference to array, or null. Null case can happen in this case:
+    // int a[] = null;
+    // return a[0] <- aload_0, iconst_0, iaload
+    assert refType.getSort() == Type.ARRAY || "null".equals(refType.getInternalName());
 
     sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
     writer.writeKeyword(Token.REINTERPRETCAST_OPERATION);
