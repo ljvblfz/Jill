@@ -559,7 +559,6 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
       if (tryCatchNode.start == labelNode) {
         currentCatchList.add(id);
       } else if (tryCatchNode.end == labelNode) {
-        assert currentCatchList.contains(id);
         currentCatchList.remove(id);
       }
     }
