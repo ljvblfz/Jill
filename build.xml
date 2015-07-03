@@ -15,7 +15,8 @@
    limitations under the License.
 -->
 
-<project name="jill" default="all">
+<project name="jill" default="all"
+  xmlns:if="ant:if">
 
   <description>
       This buildfile is used to build all Jill projects and run tests. It depends on Jack's build.xml.
@@ -69,8 +70,8 @@
 
     <copy file="${jill-project.dir}/version.properties" tofile="${jill-top-dist.dir}/tmp/version.properties"/>
      <propertyfile file="${jill-top-dist.dir}/tmp/version.properties">
-       <entry key="version.sha" value="${dist.sha}"/>
-       <entry key="version.buildid" value="${dist.build-id}"/>
+       <entry if:set="dist.sha"  key="version.sha" value="${dist.sha}"/>
+       <entry if:set="dist.build-id"  key="version.buildid" value="${dist.build-id}"/>
      </propertyfile>
 
     <copy file="${jill-top-dist.dir}/tmp/version.properties" tofile="${jill-top-dist.dir}/tmp/jill-version.properties"/>
