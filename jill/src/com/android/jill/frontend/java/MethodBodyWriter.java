@@ -332,7 +332,7 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     } else if (AsmHelper.isAbstract(currentMethod)) {
       writer.writeNull();
     } else {
-      createCatchedVariables();
+      createCaughtVariables();
       currentLine = startLine;
       writeJavaMethodBody();
     }
@@ -360,22 +360,22 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     }
   }
 
-  private void createCatchedVariables() {
+  private void createCaughtVariables() {
     for (TryCatchBlockNode tryCatchNode : currentMethod.tryCatchBlocks) {
       Variable declaringCatchVariable = null;
-      Type catchedType;
+      Type caughtType;
       if (tryCatchNode.type == null) {
         // Jack represents finally by a catch on java.lang.Object.
-        catchedType = Type.getType(Object.class);
+        caughtType = Type.getType(Object.class);
       } else {
-        // If there is multi catches, it is not possible to compute precisely the common type of
+        // If there are multi catches, it is not possible to compute precisely the common type of
         // exceptions without having the full classpath and by loading all classes. Jill uses
         // Throwable as common type even when a more precise type is known.
         // This type will be cast with a reinterpret cast to the right type when it will be used.
-        catchedType = Type.getType(Throwable.class);
+        caughtType = Type.getType(Throwable.class);
       }
-      String id = "catchedExceptionNotUsed" + (unusedVarCount++);
-      declaringCatchVariable = new Variable(id, id, catchedType, null);
+      String id = "-e_" + (unusedVarCount++);
+      declaringCatchVariable = new Variable(id, id, caughtType, null);
       catchBlockToCatchedVariable.put(tryCatchNode, declaringCatchVariable);
     }
   }
