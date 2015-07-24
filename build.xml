@@ -150,9 +150,6 @@
       <fileset dir="${jill-api.lib.build.outdir}">
         <include name="**/*" />
       </fileset>
-      <fileset dir="${guava.build.outdir}">
-        <include name="**/*" />
-      </fileset>
       <fileset dir="${schedlib.build.outdir}">
         <include name="**/*" />
       </fileset>
@@ -166,6 +163,9 @@
         <include name="**/*" />
       </fileset>
     </copy>
+    <unzip dest="${jill.build.outdir}" src="${guava.dist.dir}/${guava.libname}">
+      <patternset excludes="META-INF/**"/>
+    </unzip>
 
     <copy file="${jill-project.dir}/version.properties"
           tofile="${jill.build.outdir}/jill-version.properties"/>
