@@ -51,6 +51,9 @@ public class Options {
   @Option(name = "--version", usage = "display version")
   protected boolean version;
 
+  @Option(name = "--tolerant", usage = "be tolerant to malformed input (default: false)")
+  protected boolean tolerant = false;
+
   private final ContainerType outputContainer = ContainerType.ZIP;
 
   @Option(name = "--no-debug", usage = "disable debug info emission")
@@ -120,8 +123,17 @@ public class Options {
     this.verbose = verbose;
   }
 
+
   public boolean isVerbose() {
     return verbose;
+  }
+
+  public void setTolerant(boolean tolerant) {
+    this.tolerant = tolerant;
+  }
+
+  public boolean isTolerant() {
+    return tolerant;
   }
 
   public boolean isEmitDebugInfo() {

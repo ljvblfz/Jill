@@ -56,6 +56,7 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -198,18 +199,23 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     this.annotWriter = annotWriter;
     this.options = options;
     currentClass = cn;
-    currentMethod = getMethodWithoutJSR(mn);
-
     BasicInterpreter bi = new JillAnalyzer();
     analyzer = new Analyzer<BasicValue>(bi);
-    try {
-      analyzer.analyze(currentClass.name, currentMethod);
 
-      removeDeadCode();
+    if (mn.instructions.size() != 0) {
+      currentMethod = getMethodWithoutJSR(mn);
 
-      analyzer.analyze(currentClass.name, currentMethod);
-    } catch (AnalyzerException e) {
-      throw new JillException("Variable analyser fails.", e);
+      try {
+        analyzer.analyze(currentClass.name, currentMethod);
+
+        removeDeadCode();
+
+        analyzer.analyze(currentClass.name, currentMethod);
+      } catch (AnalyzerException e) {
+        throw new JillException("Variable analyser fails.", e);
+      }
+    } else {
+      currentMethod = mn;
     }
   }
 
@@ -406,86 +412,109 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
     writer.writeOpen();
     writer.writeOpenNodeList();
 
-    for (Map.Entry<Variable, Variable> entry : parameter2Var.entrySet()) {
-      Variable p = entry.getKey();
-      sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
-      writer.writeCatchBlockIds(currentCatchList);
-      writer.writeKeyword(Token.EXPRESSION_STATEMENT);
-      writer.writeOpen();
-      sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
-      writer.writeKeyword(Token.ASG_OPERATION);
-      writer.writeOpen();
-      writeLocalRef(entry.getValue());
-      if (p.getType() == Type.BOOLEAN_TYPE) {
-        writeCastOperation(Token.REINTERPRETCAST_OPERATION, p, Type.INT_TYPE.getDescriptor());
+    if (currentMethod.instructions.size() == 0) {
+      if (options.isTolerant()) {
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeCatchBlockIds(currentCatchList);
+        writer.writeKeyword(Token.THROW_STATEMENT);
+        writer.writeOpen();
+        writer.writeKeyword(Token.NEW_INSTANCE);
+        writer.writeOpen();
+        // Type of created object
+        writer.writeId("Ljava/lang/AssertionError;");
+        // Empty argument types
+        writer.writeIds(Collections.<String>emptyList());
+        // No arguments
+        writer.writeOpenNodeList();
+        writer.writeCloseNodeList();
+        writer.writeClose();
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
       } else {
-        writeLocalRef(p);
+        throw new JillException("Method should have instructions.");
       }
-      sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
-      writer.writeClose();
-      sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
-      writer.writeClose();
-    }
-
-    Frame<BasicValue>[] frames = analyzer.getFrames();
-
-    for (int insnIdx = 0; insnIdx < currentMethod.instructions.size(); insnIdx++) {
-      currentPc = insnIdx;
-      AbstractInsnNode insn = currentMethod.instructions.get(insnIdx);
-      Frame<BasicValue> currentFrame = frames[insnIdx];
-      // There's no next frame if insn is a return, and the last instruction.
-      Frame<BasicValue> nextFrame = (insnIdx < frames.length - 1) ? frames[insnIdx + 1] : null;
-
-      if (insn instanceof JumpInsnNode) {
-        writeInsn(currentFrame, (JumpInsnNode) insn, insnIdx);
-      } else if (insn instanceof LdcInsnNode) {
-        assert nextFrame != null;
-        writeInsn(nextFrame, (LdcInsnNode) insn);
-      } else if (insn instanceof InsnNode) {
-        writeInsn(currentFrame, nextFrame, (InsnNode) insn);
-      } else if (insn instanceof VarInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (VarInsnNode) insn);
-      } else if (insn instanceof LabelNode) {
-        computeCatchList((LabelNode) insn);
-        writeCatchBlock((LabelNode) insn, insnIdx, frames);
-        writeLabelInsn(insnIdx);
-      } else if (insn instanceof FieldInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (FieldInsnNode) insn);
-      } else if (insn instanceof MethodInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (MethodInsnNode) insn);
-      } else if (insn instanceof LineNumberNode) {
-        currentLine = ((LineNumberNode) insn).line;
-      } else if (insn instanceof FrameNode) {
-        // Nothing to do.
-      } else if (insn instanceof TypeInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (TypeInsnNode) insn);
-      } else if (insn instanceof TableSwitchInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (TableSwitchInsnNode) insn, insnIdx);
-      } else if (insn instanceof LookupSwitchInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (LookupSwitchInsnNode) insn, insnIdx);
-      } else if (insn instanceof IntInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (IntInsnNode) insn);
-      } else if (insn instanceof IincInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (IincInsnNode) insn);
-      } else if (insn instanceof MultiANewArrayInsnNode) {
-        assert nextFrame != null;
-        writeInsn(currentFrame, nextFrame, (MultiANewArrayInsnNode) insn);
-      } else {
-        throw new JillException("Unsupported instruction.");
+    } else {
+      for (Map.Entry<Variable, Variable> entry : parameter2Var.entrySet()) {
+        Variable p = entry.getKey();
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeCatchBlockIds(currentCatchList);
+        writer.writeKeyword(Token.EXPRESSION_STATEMENT);
+        writer.writeOpen();
+        sourceInfoWriter.writeDebugBegin(currentClass, currentLine);
+        writer.writeKeyword(Token.ASG_OPERATION);
+        writer.writeOpen();
+        writeLocalRef(entry.getValue());
+        if (p.getType() == Type.BOOLEAN_TYPE) {
+          writeCastOperation(Token.REINTERPRETCAST_OPERATION, p, Type.INT_TYPE.getDescriptor());
+        } else {
+          writeLocalRef(p);
+        }
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
+        sourceInfoWriter.writeDebugEnd(currentClass, currentLine + 1);
+        writer.writeClose();
       }
-    }
 
-    // Current solution for comparison requires its result to be consumed by an "if"
-    if (!cmpOperands.isEmpty()) {
-      throw new AssertionError("A comparison has not been followed by an if");
+      Frame<BasicValue>[] frames = analyzer.getFrames();
+
+      for (int insnIdx = 0; insnIdx < currentMethod.instructions.size(); insnIdx++) {
+        currentPc = insnIdx;
+        AbstractInsnNode insn = currentMethod.instructions.get(insnIdx);
+        Frame<BasicValue> currentFrame = frames[insnIdx];
+        // There's no next frame if insn is a return, and the last instruction.
+        Frame<BasicValue> nextFrame = (insnIdx < frames.length - 1) ? frames[insnIdx + 1] : null;
+
+        if (insn instanceof JumpInsnNode) {
+          writeInsn(currentFrame, (JumpInsnNode) insn, insnIdx);
+        } else if (insn instanceof LdcInsnNode) {
+          assert nextFrame != null;
+          writeInsn(nextFrame, (LdcInsnNode) insn);
+        } else if (insn instanceof InsnNode) {
+          writeInsn(currentFrame, nextFrame, (InsnNode) insn);
+        } else if (insn instanceof VarInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (VarInsnNode) insn);
+        } else if (insn instanceof LabelNode) {
+          computeCatchList((LabelNode) insn);
+          writeCatchBlock((LabelNode) insn, insnIdx, frames);
+          writeLabelInsn(insnIdx);
+        } else if (insn instanceof FieldInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (FieldInsnNode) insn);
+        } else if (insn instanceof MethodInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (MethodInsnNode) insn);
+        } else if (insn instanceof LineNumberNode) {
+          currentLine = ((LineNumberNode) insn).line;
+        } else if (insn instanceof FrameNode) {
+          // Nothing to do.
+        } else if (insn instanceof TypeInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (TypeInsnNode) insn);
+        } else if (insn instanceof TableSwitchInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (TableSwitchInsnNode) insn, insnIdx);
+        } else if (insn instanceof LookupSwitchInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (LookupSwitchInsnNode) insn, insnIdx);
+        } else if (insn instanceof IntInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (IntInsnNode) insn);
+        } else if (insn instanceof IincInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (IincInsnNode) insn);
+        } else if (insn instanceof MultiANewArrayInsnNode) {
+          assert nextFrame != null;
+          writeInsn(currentFrame, nextFrame, (MultiANewArrayInsnNode) insn);
+        } else {
+          throw new JillException("Unsupported instruction.");
+        }
+      }
+
+      // Current solution for comparison requires its result to be consumed by an "if"
+      if (!cmpOperands.isEmpty()) {
+        throw new AssertionError("A comparison has not been followed by an if");
+      }
     }
 
     writer.writeCloseNodeList();
@@ -2058,9 +2087,11 @@ public class MethodBodyWriter extends JillWriter implements Opcodes {
   private void writeLocals() throws IOException {
     writer.writeOpenNodeList();
 
-    Iterator<Variable> varIt = collectLocals();
-    while (varIt.hasNext()) {
-      writeLocal(varIt.next());
+    if (currentMethod.instructions.size() != 0) {
+      Iterator<Variable> varIt = collectLocals();
+      while (varIt.hasNext()) {
+        writeLocal(varIt.next());
+      }
     }
 
     writer.writeCloseNodeList();
